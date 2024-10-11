@@ -48,12 +48,17 @@ spec:
             {{- toYaml .Values.readinessProbe | nindent 12 }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
-          {{- with .Values.volumeMounts }}
           volumeMounts:
+            - name: helm-config
+              mountPath: /app/config/helm-config
+          {{- with .Values.volumeMounts }}
             {{- toYaml . | nindent 12 }}
           {{- end }}
-      {{- with .Values.volumes }}
       volumes:
+        - name: helm-config
+          configMap:
+            name: {{ include "spring-boot.propertiesConfigMapName" . }}
+      {{- with .Values.volumes }}
         {{- toYaml . | nindent 8 }}
       {{- end }}
       {{- with .Values.nodeSelector }}
@@ -87,8 +92,16 @@ spec:
 {{- else if eq (typeOf $activeProfiles) "[]interface {}" -}}
   {{ join ", " $activeProfiles }}
 {{- else if eq $activeProfiles nil -}}
-  ""
+  {{- include "spring.container.defaultProfiles" . -}}
 {{- else -}}
   {{ required "Illegal argument for spring.container.activeProfiles" nil }}
 {{- end -}}
+{{- end -}}
+
+{{- define "spring.container.defaultProfiles" -}}
+{{- $profiles := list -}}
+{{- range $key,$value := .Values.spring.config -}}
+{{- $profiles = append $profiles $key -}}
+{{- end -}}
+{{- join ", " $profiles -}}
 {{- end -}}
