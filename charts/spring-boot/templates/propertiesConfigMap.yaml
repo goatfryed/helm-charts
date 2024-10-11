@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "spring-boot.propertiesConfigMapName" . }}
+data:
+  {{- range $profile,$config := .Values.spring.config -}}
+  {{- if $config.values }}
+  application-{{- $profile -}}.yaml: |
+  {{- if kindIs "map" $config.values }}
+    {{- toYaml $config.values | nindent 4 -}}
+  {{- else if kindIs "string" $config.values }}
+    {{- $config.values | nindent 4 -}}
+  {{- else }}
+    {{ required "spring.config.{profile}.values should be one of ~,string,{}" nil }}
+  {{- end -}}
+  {{- end -}}
+  {{- end -}}

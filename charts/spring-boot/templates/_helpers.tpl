@@ -60,3 +60,7 @@ Create the name of the service account to use
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
+
+{{- define "spring-boot.propertiesConfigMapName" -}}
+{{ include "spring-boot.fullname" . }}-application-properties
+{{- end -}}

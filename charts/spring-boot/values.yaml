@@ -13,7 +13,19 @@ image:
 spring:
   profiles:
     # Configure your activated profiles here
+    # defaults to all profiles listed in config below
     active: ~
+  # set externalized configuration properties of your spring boot application
+  # provided as a map of profiles, that you can then enable or disable individually
+  config: {}
+  #  Must contain one of values,-
+  # '{profile'}:
+  #    # values can contain values that are injected into your application via configMaps. Can be either
+  #    # 1. a nested dictionary, that is directly injected. Recommended in values.yaml
+  #    # 2. a yaml string. Recommended for usage with helm update --set-file spring.config.{profile}.values=path/to/file
+  #    values:
+  #      your.spring.property: value
+
 
 imagePullSecrets: []
 nameOverride: ""
