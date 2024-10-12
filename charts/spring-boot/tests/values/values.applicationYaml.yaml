@@ -1,0 +1,16 @@
+spring:
+  config:
+    # provide spring properties as simple nested object
+    profile1:
+      values:
+        server:
+          port: 8080
+    # provide spring properties as string
+    # *don't* do this in your actual values.yaml. Intended for usage with helm --set-file option to pass an actual application.yaml file
+    # If you use this in your values.yaml, you're only losing ide support, if any, without benefits.
+    profile2:
+      values: |
+        logging:
+          level:
+            org.springframework: error
+            com.example.myapp: debug

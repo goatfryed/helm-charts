@@ -1,0 +1,29 @@
+suite: test chart
+templates:
+  - deployment.yaml
+  - propertiesConfigMap.yaml
+tests:
+  - it: injects application properties config map in spring-container
+    values:
+      - "values/values.applicationYaml.yaml"
+    asserts:
+      - template: deployment.yaml
+        matchSnapshot:
+          path: spec.template.spec
+  - it: renders application properties as configMaps
+    values:
+      - "values/values.applicationYaml.yaml"
+    asserts:
+      - template: propertiesConfigMap.yaml
+        matchSnapshot: {}
+  - it: activates profiles automatically
+    values:
+      - "values/values.applicationYaml.yaml"
+    templates:
+      - deployment.yaml
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].env[0]
+          value:
+            name: SPRING_PROFILES_ACTIVE
+            value: "profile1, profile2"
