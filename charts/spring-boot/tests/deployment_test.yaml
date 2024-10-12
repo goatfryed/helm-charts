@@ -1,0 +1,22 @@
+suite: test deployment
+templates:
+  - deployment.yaml
+tests:
+  - it: supports profiles as strings
+    set:
+      spring.profiles.active: "k8s, local, something"
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].env[0]
+          value:
+            name: SPRING_PROFILES_ACTIVE
+            value: "k8s, local, something"
+  - it: supports profiles as arrays
+    set:
+      spring.profiles.active: [k8s, local, something]
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].env[0]
+          value:
+            name: SPRING_PROFILES_ACTIVE
+            value: "k8s, local, something"

@@ -1,6 +1,0 @@
-spring:
-  config:
-    profile1:
-      values:
-        server:
-          port: 123
