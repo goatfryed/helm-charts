@@ -126,6 +126,21 @@ This project uses
 - [helm](https://helm.sh/)
 - [helm-unittest](https://github.com/helm-unittest/helm-unittest)
 
+#### Testing
+To ensure that the helm charts work properly and don't break, we test our helm charts.
+The tests are specified with [helm-unittest](https://github.com/helm-unittest/helm-unittest).
+
+By convention tests are placed in charts/{chart}/tests and suffixed with _test.yaml.
+Please familiarize yourself with helm unittest. We use both approaches of property testing and snapshot testing.
+
+**Property testing** are used for smaller, complex logic. A toggle to exclude parts or support for different parameter types
+are good examples for property testing. Features that modify small bits on in various manifests are also good candidates for property testing.
+
+**Snapshot testing** is used to verify default outputs as well as the overall generated manifests.
+Snapshot testing is a great alternative, if the logic affects a lot of properties, because it ensures that all properties are tested and important.
+
+Consider the tests part of our documentation that show what the charts do based on different inputs.
+
 ### Improving The Documentation
 As this project is still in it's early phase, feedback and contribution to the documentation is highly appreciated.
 
