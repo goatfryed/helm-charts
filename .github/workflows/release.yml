@@ -15,6 +15,10 @@ jobs:
   release:
     needs: test-before-release
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
 
     steps:
       # Step 1: Checkout code
