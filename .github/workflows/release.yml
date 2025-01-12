@@ -58,6 +58,8 @@ jobs:
           <meta http-equiv="refresh" content="0; URL=${REDIRECT_URL}">
           <link rel="canonical" href="${REDIRECT_URL}">
           EOF
+      - name: Add artifacthub.io metadata
+        run: echo "${{ vars.artifacthub_repo_yml }}" > build/pages/artifacthub-repo.yml
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
