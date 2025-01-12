@@ -12,6 +12,12 @@ tests:
         matchSnapshot:
       - template: serviceaccount.yaml
         matchSnapshot:
+  - it: this tests fails in pipeline
+    set:
+      image.repository: goatfryed/spring-boot-echo
+    asserts:
+      - template: ingress.yaml
+        matchSnapshot:
   - it: works with minimal configuration
     set:
       image.repository: goatfryed/spring-boot-echo
