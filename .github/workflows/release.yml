@@ -51,7 +51,7 @@ jobs:
         env:
           REDIRECT_URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/index.yaml
         run: |
-          cat <<EOF > build/pages
+          cat <<EOF > build/pages/index.html
           <!DOCTYPE html>
           <meta charset="utf-8">
           <title>Redirecting to ${REDIRECT_URL}</title>
