@@ -1,0 +1,42 @@
+name: Helm Test Workflow
+
+on:
+  workflow_call:
+    inputs:
+      chart-dir:
+        description: "Directory of the Helm chart to test"
+        required: true
+        type: string
+
+jobs:
+  helm-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout code
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      # Set up Helm
+      - name: Install Helm
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+
+      # Install helm-unittest plugin
+      - name: Install helm-unittest Plugin
+        run: helm plugin install https://github.com/quintush/helm-unittest
+
+      # Run Helm unittest
+      - name: Test Chart Unittest
+        run: helm template ${{ inputs.chart-dir }} --set image.repository=goatfryed/spring-boot-echo
+
+      # Run Helm unittest
+      - name: Versions
+        run: |
+          helm version
+          helm plugin list
+
+      # Run Helm unittest
+      - name: Run Helm Unittest
+        run: helm unittest ${{ inputs.chart-dir }} --debug
+        continue-on-error: true

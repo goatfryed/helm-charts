@@ -1,10 +1,10 @@
-injects application properties spring-container:
+injects application properties config map in spring-container:
   1: |
     containers:
       - env:
           - name: SPRING_PROFILES_ACTIVE
-            value: profile1, profile2, profile3, profile4
-        image: :1.16.0
+            value: profile1, profile2
+        image: goatfryed/spring-boot-echo:latest
         imagePullPolicy: IfNotPresent
         livenessProbe:
           httpGet:
@@ -23,29 +23,15 @@ injects application properties spring-container:
         securityContext: {}
         volumeMounts:
           - mountPath: /app/config/helm-config
-            name: helm-application-properties
-            readOnly: true
-          - mountPath: /app/config/config-map/application-profile3.properties
-            name: user-application-properties-profile3
-            readOnly: true
-            subPath: my-key
-          - mountPath: /app/config/config-map/application-profile4.yaml
-            name: user-application-properties-profile4
-            readOnly: true
-            subPath: app.yml
+            name: helm-config
     securityContext: {}
     serviceAccountName: RELEASE-NAME-spring-boot
     volumes:
       - configMap:
           name: RELEASE-NAME-spring-boot-application-properties
-        name: helm-application-properties
-      - configMap:
-          name: user-defined-config-map
-        name: user-application-properties-profile3
-      - name: user-application-properties-profile4
-        secret:
-          secretName: user-defined-config-map
-  2: |
+        name: helm-config
+renders application properties as configMaps:
+  1: |
     apiVersion: v1
     data:
       application-profile1.yaml: |
@@ -59,116 +45,3 @@ injects application properties spring-container:
     kind: ConfigMap
     metadata:
       name: RELEASE-NAME-spring-boot-application-properties
-mounts configuration values:
-  1: |
-    containers:
-      - env:
-          - name: SPRING_PROFILES_ACTIVE
-            value: userConfig
-        image: :1.16.0
-        imagePullPolicy: IfNotPresent
-        livenessProbe:
-          httpGet:
-            path: /
-            port: http
-        name: spring-boot
-        ports:
-          - containerPort: 80
-            name: http
-            protocol: TCP
-        readinessProbe:
-          httpGet:
-            path: /
-            port: http
-        resources: {}
-        securityContext: {}
-        volumeMounts:
-          - mountPath: /app/config/helm-config
-            name: helm-application-properties
-            readOnly: true
-    securityContext: {}
-    serviceAccountName: RELEASE-NAME-spring-boot
-    volumes:
-      - configMap:
-          name: RELEASE-NAME-spring-boot-application-properties
-        name: helm-application-properties
-mounts referenced configMaps:
-  1: |
-    containers:
-      - env:
-          - name: SPRING_PROFILES_ACTIVE
-            value: userConfig
-        image: :1.16.0
-        imagePullPolicy: IfNotPresent
-        livenessProbe:
-          httpGet:
-            path: /
-            port: http
-        name: spring-boot
-        ports:
-          - containerPort: 80
-            name: http
-            protocol: TCP
-        readinessProbe:
-          httpGet:
-            path: /
-            port: http
-        resources: {}
-        securityContext: {}
-        volumeMounts:
-          - mountPath: /app/config/helm-config
-            name: helm-application-properties
-            readOnly: true
-          - mountPath: /app/config/config-map/application-userConfig.yaml
-            name: user-application-properties-userConfig
-            readOnly: true
-            subPath: application.yaml
-    securityContext: {}
-    serviceAccountName: RELEASE-NAME-spring-boot
-    volumes:
-      - configMap:
-          name: RELEASE-NAME-spring-boot-application-properties
-        name: helm-application-properties
-      - configMap:
-          name: user-defined-config-map
-        name: user-application-properties-userConfig
-mounts referenced secrets:
-  1: |
-    containers:
-      - env:
-          - name: SPRING_PROFILES_ACTIVE
-            value: userConfig
-        image: :1.16.0
-        imagePullPolicy: IfNotPresent
-        livenessProbe:
-          httpGet:
-            path: /
-            port: http
-        name: spring-boot
-        ports:
-          - containerPort: 80
-            name: http
-            protocol: TCP
-        readinessProbe:
-          httpGet:
-            path: /
-            port: http
-        resources: {}
-        securityContext: {}
-        volumeMounts:
-          - mountPath: /app/config/helm-config
-            name: helm-application-properties
-            readOnly: true
-          - mountPath: /app/config/config-map/application-userConfig.yaml
-            name: user-application-properties-userConfig
-            readOnly: true
-            subPath: application.yaml
-    securityContext: {}
-    serviceAccountName: RELEASE-NAME-spring-boot
-    volumes:
-      - configMap:
-          name: RELEASE-NAME-spring-boot-application-properties
-        name: helm-application-properties
-      - name: user-application-properties-userConfig
-        secret:
-          secretName: user-defined-secret
