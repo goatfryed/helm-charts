@@ -4,4 +4,15 @@ tests:
     set:
       image.repository: goatfryed/spring-boot-echo
     asserts:
-      - matchSnapshot:
+      - template: deployment.yaml
+        matchSnapshot:
+      - template: propertiesConfigMap.yaml
+        matchSnapshot:
+      - template: service.yaml
+        matchSnapshot:
+      - template: ingress.yaml
+        matchSnapshot:
+      - template: serviceaccount.yaml
+        matchSnapshot:
+      - template: hpa.yaml
+        matchSnapshot:
