@@ -28,4 +28,4 @@ jobs:
 
       # Run Helm unittest
       - name: Run Helm Unittest
-        run: helm unittest ${{ inputs.chart-dir }}
+        run: helm unittest ${{ inputs.chart-dir }} --debug
