@@ -1,7 +1,7 @@
 suite: test chart
 tests:
   - it: works with minimal configuration
-    set:
-      image.repository: goatfryed/spring-boot-echo
+    values:
+      - "values/values.chart.yaml"
     asserts:
       - matchSnapshot: {}

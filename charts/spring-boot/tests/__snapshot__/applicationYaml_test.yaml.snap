@@ -4,7 +4,7 @@ injects application properties spring-container:
       - env:
           - name: SPRING_PROFILES_ACTIVE
             value: profile1, profile2, profile3, profile4
-        image: user-registry/user-repo:user-tag
+        image: :1.16.0
         imagePullPolicy: IfNotPresent
         livenessProbe:
           httpGet:
