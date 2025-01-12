@@ -14,7 +14,6 @@ works with minimal configuration:
         app.kubernetes.io/instance: RELEASE-NAME
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: spring-boot
-        app.kubernetes.io/version: 1.16.0
         helm.sh/chart: spring-boot-0.1.0
       name: RELEASE-NAME-spring-boot
     spec:
@@ -29,14 +28,13 @@ works with minimal configuration:
             app.kubernetes.io/instance: RELEASE-NAME
             app.kubernetes.io/managed-by: Helm
             app.kubernetes.io/name: spring-boot
-            app.kubernetes.io/version: 1.16.0
             helm.sh/chart: spring-boot-0.1.0
         spec:
           containers:
             - env:
                 - name: SPRING_PROFILES_ACTIVE
                   value: null
-              image: goatfryed/spring-boot-echo:1.16.0
+              image: goatfryed/spring-boot-echo:latest
               imagePullPolicy: IfNotPresent
               livenessProbe:
                 httpGet:
@@ -76,7 +74,6 @@ works with minimal configuration:
         app.kubernetes.io/instance: RELEASE-NAME
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: spring-boot
-        app.kubernetes.io/version: 1.16.0
         helm.sh/chart: spring-boot-0.1.0
       name: RELEASE-NAME-spring-boot
     spec:
@@ -98,7 +95,6 @@ works with minimal configuration:
         app.kubernetes.io/instance: RELEASE-NAME
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: spring-boot
-        app.kubernetes.io/version: 1.16.0
         helm.sh/chart: spring-boot-0.1.0
       name: RELEASE-NAME-spring-boot
   6: |
@@ -111,7 +107,6 @@ works with minimal configuration:
         app.kubernetes.io/instance: RELEASE-NAME
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: spring-boot
-        app.kubernetes.io/version: 1.16.0
         helm.sh/chart: spring-boot-0.1.0
       name: RELEASE-NAME-spring-boot-test-connection
     spec:

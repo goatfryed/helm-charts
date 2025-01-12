@@ -1,3 +1,6 @@
+image:
+  repository: goatfryed/spring-boot-echo
+
 spring:
   config:
     # provide spring properties as simple nested object

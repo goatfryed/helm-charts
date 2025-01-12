@@ -4,7 +4,7 @@ injects application properties config map in spring-container:
       - env:
           - name: SPRING_PROFILES_ACTIVE
             value: profile1, profile2
-        image: :1.16.0
+        image: goatfryed/spring-boot-echo:latest
         imagePullPolicy: IfNotPresent
         livenessProbe:
           httpGet:
