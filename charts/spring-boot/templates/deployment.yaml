@@ -49,13 +49,13 @@ spec:
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
-            - name: helm-config
+            - name: helm-application-properties
               mountPath: /app/config/helm-config
           {{- with .Values.volumeMounts }}
             {{- toYaml . | nindent 12 }}
           {{- end }}
       volumes:
-        - name: helm-config
+        - name: helm-application-properties
           configMap:
             name: {{ include "spring-boot.propertiesConfigMapName" . }}
       {{- with .Values.volumes }}

@@ -23,13 +23,13 @@ injects application properties config map in spring-container:
         securityContext: {}
         volumeMounts:
           - mountPath: /app/config/helm-config
-            name: helm-config
+            name: helm-application-properties
     securityContext: {}
     serviceAccountName: RELEASE-NAME-spring-boot
     volumes:
       - configMap:
           name: RELEASE-NAME-spring-boot-application-properties
-        name: helm-config
+        name: helm-application-properties
 renders application properties as configMaps:
   1: |
     apiVersion: v1
