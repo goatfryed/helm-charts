@@ -4,4 +4,4 @@ tests:
     set:
       image.repository: goatfryed/spring-boot-echo
     asserts:
-      - matchSnapshot: {}
+      - matchSnapshot:

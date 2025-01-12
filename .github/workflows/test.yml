@@ -27,5 +27,9 @@ jobs:
         run: helm plugin install https://github.com/quintush/helm-unittest
 
       # Run Helm unittest
+      - name: Test Chart Unittest
+        run: helm template ${{ inputs.chart-dir }} --set image.repository=goatfryed/spring-boot-echo
+
+      # Run Helm unittest
       - name: Run Helm Unittest
         run: helm unittest ${{ inputs.chart-dir }} --debug
