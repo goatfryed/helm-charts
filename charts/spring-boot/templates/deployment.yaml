@@ -51,6 +51,7 @@ spec:
           volumeMounts:
             - name: helm-application-properties
               mountPath: /app/config/helm-config
+              readOnly: true
             {{- include "spring-boot.userConfigMounts" . | nindent 12 }}
           {{- with .Values.volumeMounts }}
             {{- toYaml . | nindent 12 }}
@@ -134,10 +135,12 @@ user-application-properties-{{- . -}}
 - name: {{ include "spring-boot.userConfigVolumeName" $profile }}
   mountPath: /app/config/config-map/application-{{ $profile }}.{{ default "yaml" $config.configMap.type }}
   subPath: {{ default "application.yaml" $config.configMap.key }}
+  readOnly: true
 {{ else if $config.secret -}}
 - name: {{ include "spring-boot.userConfigVolumeName" $profile }}
   mountPath: /app/config/config-map/application-{{ $profile }}.{{ default "yaml" $config.secret.type }}
   subPath: {{ default "application.yaml" $config.secret.key }}
+  readOnly: true
 {{ end -}}
 {{- end -}}
 {{- end -}}
