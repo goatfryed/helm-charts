@@ -51,6 +51,7 @@ spec:
           volumeMounts:
             - name: helm-application-properties
               mountPath: /app/config/helm-config
+            {{- include "spring-boot.userConfigMounts" . | nindent 12 }}
           {{- with .Values.volumeMounts }}
             {{- toYaml . | nindent 12 }}
           {{- end }}
@@ -58,6 +59,7 @@ spec:
         - name: helm-application-properties
           configMap:
             name: {{ include "spring-boot.propertiesConfigMapName" . }}
+        {{- include "spring-boot.userConfigVolumes" . | nindent 8 }}
       {{- with .Values.volumes }}
         {{- toYaml . | nindent 8 }}
       {{- end }}
@@ -104,4 +106,28 @@ spec:
 {{- $profiles = append $profiles $key -}}
 {{- end -}}
 {{- join ", " $profiles -}}
+{{- end -}}
+
+{{- define "spring-boot.userConfigVolumeName" -}}
+user-application-properties-{{- . -}}
+{{- end -}}
+
+{{- define "spring-boot.userConfigVolumes" -}}
+{{- range $profile,$config := .Values.spring.config -}}
+{{- if $config.configMap -}}
+- name: {{ include "spring-boot.userConfigVolumeName" $profile }}
+  configMap:
+    name: {{ required "spring.config.{profile}.configMap.name must be given" $config.configMap.name }}
+{{ end -}}
+{{- end -}}
+{{- end -}}
+
+{{- define "spring-boot.userConfigMounts" -}}
+{{- range $profile,$config := .Values.spring.config -}}
+{{- if $config.configMap }}
+- name: {{ include "spring-boot.userConfigVolumeName" $profile }}
+  mountPath: /app/config/config-map/application-{{ $profile }}.{{ default "yaml" $config.configMap.type }}
+  subPath: {{ default "application.yaml" $config.configMap.key }}
+{{- end -}}
+{{- end -}}
 {{- end -}}
