@@ -4,6 +4,7 @@ templates:
 tests:
   - it: supports profiles as strings
     set:
+      image.repository: goatfryed/spring-boot-echo
       spring.profiles.active: "k8s, local, something"
     asserts:
       - equal:
@@ -13,6 +14,7 @@ tests:
             value: "k8s, local, something"
   - it: supports profiles as arrays
     set:
+      image.repository: goatfryed/spring-boot-echo
       spring.profiles.active: [k8s, local, something]
     asserts:
       - equal:
