@@ -117,17 +117,27 @@ user-application-properties-{{- . -}}
 {{- if $config.configMap -}}
 - name: {{ include "spring-boot.userConfigVolumeName" $profile }}
   configMap:
-    name: {{ required "spring.config.{profile}.configMap.name must be given" $config.configMap.name }}
+    name: {{ required (printf "spring.config.%s.configMap.name must be given" $profile) $config.configMap.name }}
+{{ else if $config.secret -}}
+- name: {{ include "spring-boot.userConfigVolumeName" $profile }}
+  secret:
+    secretName: {{ required (printf "spring.config.%s.configMap.name must be given" $profile) $config.secret.name }}
 {{ end -}}
 {{- end -}}
 {{- end -}}
 
 {{- define "spring-boot.userConfigMounts" -}}
 {{- range $profile,$config := .Values.spring.config -}}
-{{- if $config.configMap }}
+{{- if and $config.configMap $config.secret -}}
+  {{ fail (printf "use either configMap or secret in spring.config.%s" $profile) }}
+{{- else if $config.configMap -}}
 - name: {{ include "spring-boot.userConfigVolumeName" $profile }}
   mountPath: /app/config/config-map/application-{{ $profile }}.{{ default "yaml" $config.configMap.type }}
   subPath: {{ default "application.yaml" $config.configMap.key }}
-{{- end -}}
+{{ else if $config.secret -}}
+- name: {{ include "spring-boot.userConfigVolumeName" $profile }}
+  mountPath: /app/config/config-map/application-{{ $profile }}.{{ default "yaml" $config.secret.type }}
+  subPath: {{ default "application.yaml" $config.secret.key }}
+{{ end -}}
 {{- end -}}
 {{- end -}}

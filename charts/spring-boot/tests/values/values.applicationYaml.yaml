@@ -1,3 +1,7 @@
+image:
+  repository: user-registry/user-repo
+  tag: "user-tag"
+
 spring:
   config:
     # provide spring properties as simple nested object
@@ -19,3 +23,8 @@ spring:
         name: user-defined-config-map
         key: my-key
         type: properties
+    profile4:
+      secret:
+        name: user-defined-config-map
+        key: app.yml
+        type: yaml

@@ -35,6 +35,13 @@ spring:
 #        key: "application.yaml"
 #        # file type and extension
 #        type: "yaml"
+#      secret:
+#        # name of the secret, required
+#        name: "my-secret"
+#        # name of key with configuration values
+#        key: "application.yaml"
+#        # file type and extension
+#        type: "yaml"
 
 imagePullSecrets: []
 nameOverride: ""
