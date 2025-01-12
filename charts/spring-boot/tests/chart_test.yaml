@@ -1,6 +1,6 @@
 suite: test chart
 tests:
-  - it: works with minimal configuration
+  - it: works with minimal configuration (pipeline-safe)
     set:
       image.repository: goatfryed/spring-boot-echo
     asserts:
@@ -10,9 +10,10 @@ tests:
         matchSnapshot:
       - template: service.yaml
         matchSnapshot:
-      - template: ingress.yaml
-        matchSnapshot:
       - template: serviceaccount.yaml
         matchSnapshot:
-      - template: hpa.yaml
-        matchSnapshot:
+  - it: works with minimal configuration
+    set:
+      image.repository: goatfryed/spring-boot-echo
+    asserts:
+      - matchSnapshot:
