@@ -24,7 +24,7 @@ jobs:
 
       # Install helm-unittest plugin
       - name: Install helm-unittest Plugin
-        run: helm plugin install https://github.com/quintush/helm-unittest
+        run: helm plugin install https://github.com/helm-unittest/helm-unittest
 
       # Run Helm unittest
       - name: Test Chart Unittest
