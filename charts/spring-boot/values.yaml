@@ -18,14 +18,30 @@ spring:
   # set externalized configuration properties of your spring boot application
   # provided as a map of profiles, that you can then enable or disable individually
   config: {}
-  #  Must contain one of values,-
-  # '{profile'}:
-  #    # values can contain values that are injected into your application via configMaps. Can be either
-  #    # 1. a nested dictionary, that is directly injected. Recommended in values.yaml
-  #    # 2. a yaml string. Recommended for usage with helm update --set-file spring.config.{profile}.values=path/to/file
-  #    values:
-  #      your.spring.property: value
-
+  #  Must contain one of values,configMap
+#    k8s:
+#      # values can contain values that are injected into your application via configMaps. Can be either
+#      # 1. a nested dictionary, that is directly injected. Recommended in values.yaml
+#      # 2. a yaml string. Recommended for usage with helm update --set-file spring.config.{profile}.values=path/to/file
+#      # config files for values are mounted to /app/config/helm-config
+#      values:
+#        your.spring.property: value
+#      # Link an entry from an independent config map as profile specific config file
+#      # config files from config maps are mounted to /app/config/config-map
+#      configMap:
+#        # name of the config map, required
+#        name: "my-config-map"
+#        # name of key with configuration values
+#        key: "application.yaml"
+#        # file type and extension
+#        type: "yaml"
+#      secret:
+#        # name of the secret, required
+#        name: "my-secret"
+#        # name of key with configuration values
+#        key: "application.yaml"
+#        # file type and extension
+#        type: "yaml"
 
 imagePullSecrets: []
 nameOverride: ""

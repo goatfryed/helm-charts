@@ -17,3 +17,13 @@ spring:
           level:
             org.springframework: error
             com.example.myapp: debug
+    profile3:
+      configMap:
+        name: user-defined-config-map
+        key: my-key
+        type: properties
+    profile4:
+      secret:
+        name: user-defined-config-map
+        key: app.yml
+        type: yaml

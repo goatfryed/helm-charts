@@ -49,15 +49,18 @@ spec:
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
-            - name: helm-config
+            - name: helm-application-properties
               mountPath: /app/config/helm-config
+              readOnly: true
+            {{- include "spring-boot.userConfigMounts" . | nindent 12 }}
           {{- with .Values.volumeMounts }}
             {{- toYaml . | nindent 12 }}
           {{- end }}
       volumes:
-        - name: helm-config
+        - name: helm-application-properties
           configMap:
             name: {{ include "spring-boot.propertiesConfigMapName" . }}
+        {{- include "spring-boot.userConfigVolumes" . | nindent 8 }}
       {{- with .Values.volumes }}
         {{- toYaml . | nindent 8 }}
       {{- end }}
@@ -104,4 +107,40 @@ spec:
 {{- $profiles = append $profiles $key -}}
 {{- end -}}
 {{- join ", " $profiles -}}
+{{- end -}}
+
+{{- define "spring-boot.userConfigVolumeName" -}}
+user-application-properties-{{- . -}}
+{{- end -}}
+
+{{- define "spring-boot.userConfigVolumes" -}}
+{{- range $profile,$config := .Values.spring.config -}}
+{{- if $config.configMap -}}
+- name: {{ include "spring-boot.userConfigVolumeName" $profile }}
+  configMap:
+    name: {{ required (printf "spring.config.%s.configMap.name must be given" $profile) $config.configMap.name }}
+{{ else if $config.secret -}}
+- name: {{ include "spring-boot.userConfigVolumeName" $profile }}
+  secret:
+    secretName: {{ required (printf "spring.config.%s.configMap.name must be given" $profile) $config.secret.name }}
+{{ end -}}
+{{- end -}}
+{{- end -}}
+
+{{- define "spring-boot.userConfigMounts" -}}
+{{- range $profile,$config := .Values.spring.config -}}
+{{- if and $config.configMap $config.secret -}}
+  {{ fail (printf "use either configMap or secret in spring.config.%s" $profile) }}
+{{- else if $config.configMap -}}
+- name: {{ include "spring-boot.userConfigVolumeName" $profile }}
+  mountPath: /app/config/config-map/application-{{ $profile }}.{{ default "yaml" $config.configMap.type }}
+  subPath: {{ default "application.yaml" $config.configMap.key }}
+  readOnly: true
+{{ else if $config.secret -}}
+- name: {{ include "spring-boot.userConfigVolumeName" $profile }}
+  mountPath: /app/config/config-map/application-{{ $profile }}.{{ default "yaml" $config.secret.type }}
+  subPath: {{ default "application.yaml" $config.secret.key }}
+  readOnly: true
+{{ end -}}
+{{- end -}}
 {{- end -}}

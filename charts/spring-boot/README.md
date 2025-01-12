@@ -51,8 +51,8 @@ helm install \
 # Documentation
 We are terrible sorry to not provide a better documentation at the moment. It's coming soon!
 
-For now, please see the documentation in the [default values](values.yaml) as well as the
-Check out [tests]()
+For now, please see the documentation in the [default values](values.yaml) or take a look at the
+[unit tests](./tests)
 
 # Contributing
 Looking to contribute? Great! Check out [CONTRIBUTING.md](../../CONTRIBUTING.md)

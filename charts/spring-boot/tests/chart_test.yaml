@@ -18,8 +18,13 @@ tests:
     asserts:
       - template: ingress.yaml
         matchSnapshot:
-  - it: works with minimal configuration
+  - it: works with full configuration
     set:
       image.repository: goatfryed/spring-boot-echo
+    asserts:
+      - matchSnapshot:
+  - it: works with maximal configuration
+    values:
+      - "values/values.chart.yaml"
     asserts:
       - matchSnapshot:
