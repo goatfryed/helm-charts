@@ -19,7 +19,7 @@ jobs:
     steps:
       # Step 1: Checkout code
       - name: Checkout Code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       # Step 2: Setup Helm
       - name: Setup Helm
@@ -43,9 +43,13 @@ jobs:
         run: |
           helm repo index build/pages/charts --url $CHART_REPO_URL
 
-      # Step 6: Publish to GitHub Pages
-      - name: Publish to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+      - name: Upload Artifact
+        uses: actions/upload-pages-artifact@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: build/charts
+          # upload entire directory
+          path: 'build/pages'
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
