@@ -1,5 +1,5 @@
 apiVersion: v2
-name: spring-boot
+name: better-spring-boot
 description: Unified deployment of individual spring boot applications
 
 # A chart can be either an 'application' or a 'library' chart.
