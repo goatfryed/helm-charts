@@ -1,0 +1,15 @@
+name: Verify
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+jobs:
+  verify:
+    uses: ./.github/workflows/test.yml
+    with:
+      chart-dir: charts/spring-boot
