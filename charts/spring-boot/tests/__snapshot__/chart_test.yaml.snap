@@ -1,4 +1,4 @@
-works with minimal configuration:
+works with full configuration:
   1: |
     raw: |
       1. Get the application URL by running these commands:
@@ -53,13 +53,14 @@ works with minimal configuration:
               securityContext: {}
               volumeMounts:
                 - mountPath: /app/config/helm-config
-                  name: helm-config
+                  name: helm-application-properties
+                  readOnly: true
           securityContext: {}
           serviceAccountName: RELEASE-NAME-spring-boot
           volumes:
             - configMap:
                 name: RELEASE-NAME-spring-boot-application-properties
-              name: helm-config
+              name: helm-application-properties
   3: |
     apiVersion: v1
     data: null
@@ -118,6 +119,266 @@ works with minimal configuration:
           image: busybox
           name: wget
       restartPolicy: Never
+works with maximal configuration:
+  1: |
+    raw: |
+      1. Get the application URL by running these commands:
+        https://example.com/
+  2: |
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      labels:
+        app.kubernetes.io/instance: RELEASE-NAME
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: my-app
+        helm.sh/chart: spring-boot-0.1.0
+      name: my-app-fullname
+    spec:
+      selector:
+        matchLabels:
+          app.kubernetes.io/instance: RELEASE-NAME
+          app.kubernetes.io/name: my-app
+      template:
+        metadata:
+          annotations:
+            prometheus.io/port: "8080"
+            prometheus.io/scrape: "true"
+          labels:
+            app.kubernetes.io/component: web
+            app.kubernetes.io/instance: RELEASE-NAME
+            app.kubernetes.io/managed-by: Helm
+            app.kubernetes.io/name: my-app
+            environment: production
+            helm.sh/chart: spring-boot-0.1.0
+        spec:
+          affinity:
+            nodeAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+                nodeSelectorTerms:
+                  - matchExpressions:
+                      - key: kubernetes.io/os
+                        operator: In
+                        values:
+                          - linux
+                      - key: node-role.kubernetes.io/app
+                        operator: In
+                        values:
+                          - "true"
+            podAntiAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+                - labelSelector:
+                    matchExpressions:
+                      - key: app.kubernetes.io/name
+                        operator: In
+                        values:
+                          - my-app
+                  topologyKey: kubernetes.io/hostname
+          containers:
+            - env:
+                - name: SPRING_PROFILES_ACTIVE
+                  value: banana, funk
+              image: user-registry/user-repo:user-tag
+              imagePullPolicy: Always
+              livenessProbe:
+                failureThreshold: 3
+                httpGet:
+                  path: /health
+                  port: http
+                initialDelaySeconds: 5
+                periodSeconds: 10
+                timeoutSeconds: 3
+              name: spring-boot
+              ports:
+                - containerPort: 8080
+                  name: http
+                  protocol: TCP
+              readinessProbe:
+                failureThreshold: 3
+                httpGet:
+                  path: /ready
+                  port: http
+                initialDelaySeconds: 5
+                periodSeconds: 10
+                timeoutSeconds: 3
+              resources:
+                limits:
+                  cpu: 500m
+                  memory: 256Mi
+                requests:
+                  cpu: 250m
+                  memory: 128Mi
+              securityContext:
+                capabilities:
+                  drop:
+                    - ALL
+                readOnlyRootFilesystem: true
+                runAsNonRoot: true
+                runAsUser: 1000
+              volumeMounts:
+                - mountPath: /app/config/helm-config
+                  name: helm-application-properties
+                  readOnly: true
+                - mountPath: /app/config/config-map/application-profile3.properties
+                  name: user-application-properties-profile3
+                  readOnly: true
+                  subPath: my-key
+                - mountPath: /app/config/config-map/application-profile4.yaml
+                  name: user-application-properties-profile4
+                  readOnly: true
+                  subPath: app.yml
+                - mountPath: /app/config
+                  name: app-config-volume
+                  readOnly: true
+                - mountPath: /app/secret
+                  name: app-secret-volume
+                  readOnly: true
+          imagePullSecrets:
+            - name: my-private-registry-secret
+          nodeSelector:
+            kubernetes.io/os: linux
+            node-role.kubernetes.io/app: "true"
+          securityContext:
+            fsGroup: 2000
+          serviceAccountName: my-service-account
+          tolerations:
+            - effect: NoSchedule
+              key: node-role.kubernetes.io/app
+              operator: Exists
+          volumes:
+            - configMap:
+                name: my-app-fullname-application-properties
+              name: helm-application-properties
+            - configMap:
+                name: user-defined-config-map
+              name: user-application-properties-profile3
+            - name: user-application-properties-profile4
+              secret:
+                secretName: user-defined-config-map
+            - configMap:
+                name: app-config
+              name: app-config-volume
+            - name: app-secret-volume
+              secret:
+                optional: false
+                secretName: app-secret
+  3: |
+    apiVersion: autoscaling/v2
+    kind: HorizontalPodAutoscaler
+    metadata:
+      labels:
+        app.kubernetes.io/instance: RELEASE-NAME
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: my-app
+        helm.sh/chart: spring-boot-0.1.0
+      name: my-app-fullname
+    spec:
+      maxReplicas: 10
+      metrics:
+        - resource:
+            name: cpu
+            target:
+              averageUtilization: 75
+              type: Utilization
+          type: Resource
+      minReplicas: 2
+      scaleTargetRef:
+        apiVersion: apps/v1
+        kind: Deployment
+        name: my-app-fullname
+  4: |
+    apiVersion: networking.k8s.io/v1
+    kind: Ingress
+    metadata:
+      annotations:
+        cert-manager.io/cluster-issuer: letsencrypt-prod
+        kubernetes.io/ingress.class: nginx
+      labels:
+        app.kubernetes.io/instance: RELEASE-NAME
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: my-app
+        helm.sh/chart: spring-boot-0.1.0
+      name: my-app-fullname
+    spec:
+      ingressClassName: nginx
+      rules:
+        - host: example.com
+          http:
+            paths:
+              - backend:
+                  service:
+                    name: my-app-fullname
+                    port:
+                      number: 8080
+                path: /
+                pathType: ImplementationSpecific
+      tls:
+        - hosts:
+            - example.com
+          secretName: example-com-tls
+  5: |
+    apiVersion: v1
+    data:
+      application-profile1.yaml: |-
+        server:
+          port: 8080
+    kind: ConfigMap
+    metadata:
+      name: my-app-fullname-application-properties
+  6: |
+    apiVersion: v1
+    kind: Service
+    metadata:
+      labels:
+        app.kubernetes.io/instance: RELEASE-NAME
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: my-app
+        helm.sh/chart: spring-boot-0.1.0
+      name: my-app-fullname
+    spec:
+      ports:
+        - name: http
+          port: 8080
+          protocol: TCP
+          targetPort: http
+      selector:
+        app.kubernetes.io/instance: RELEASE-NAME
+        app.kubernetes.io/name: my-app
+      type: ClusterIP
+  7: |
+    apiVersion: v1
+    automountServiceAccountToken: true
+    kind: ServiceAccount
+    metadata:
+      annotations:
+        eks.amazonaws.com/role-arn: arn:aws:iam::123456789012:role/my-service-account-role
+      labels:
+        app.kubernetes.io/instance: RELEASE-NAME
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: my-app
+        helm.sh/chart: spring-boot-0.1.0
+      name: my-service-account
+  8: |
+    apiVersion: v1
+    kind: Pod
+    metadata:
+      annotations:
+        helm.sh/hook: test
+      labels:
+        app.kubernetes.io/instance: RELEASE-NAME
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: my-app
+        helm.sh/chart: spring-boot-0.1.0
+      name: my-app-fullname-test-connection
+    spec:
+      containers:
+        - args:
+            - my-app-fullname:8080
+          command:
+            - wget
+          image: busybox
+          name: wget
+      restartPolicy: Never
 works with minimal configuration (pipeline-safe):
   1: |
     apiVersion: apps/v1
@@ -166,13 +427,14 @@ works with minimal configuration (pipeline-safe):
               securityContext: {}
               volumeMounts:
                 - mountPath: /app/config/helm-config
-                  name: helm-config
+                  name: helm-application-properties
+                  readOnly: true
           securityContext: {}
           serviceAccountName: RELEASE-NAME-spring-boot
           volumes:
             - configMap:
                 name: RELEASE-NAME-spring-boot-application-properties
-              name: helm-config
+              name: helm-application-properties
   2: |
     apiVersion: v1
     data: null

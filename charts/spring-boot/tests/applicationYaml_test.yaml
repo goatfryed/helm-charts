@@ -25,6 +25,7 @@ tests:
             value: "profile1, profile2, profile3, profile4"
   - it: mounts configuration values
     set:
+      image.repository: goatfryed/spring-boot-echo
       spring.config.userConfig.values:
         foo: bar
         how:
@@ -35,6 +36,7 @@ tests:
           path: spec.template.spec
   - it: mounts referenced configMaps
     set:
+      image.repository: goatfryed/spring-boot-echo
       spring.config.userConfig.configMap.name: user-defined-config-map
     asserts:
       - template: deployment.yaml
@@ -42,6 +44,7 @@ tests:
           path: spec.template.spec
   - it: mounts referenced secrets
     set:
+      image.repository: goatfryed/spring-boot-echo
       spring.config.userConfig.secret.name: user-defined-secret
     asserts:
       - template: deployment.yaml
