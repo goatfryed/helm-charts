@@ -1,0 +1,23 @@
+apiVersion: v1
+entries:
+  better-spring-boot:
+  - apiVersion: v2
+    appVersion: 3.4.1
+    created: "2025-01-13T21:21:03.417489603Z"
+    description: Unified deployment of individual spring boot applications
+    digest: 99c7782a85bef75b3116fe12bdfee9e94afa7bd3b424668533af76dee167a903
+    home: https://github.com/goatfryed/helm-charts/
+    keywords:
+    - java
+    - spring-boot
+    maintainers:
+    - email: goatfryed@gmail.com
+      name: Omar Sood
+    name: better-spring-boot
+    sources:
+    - https://github.com/goatfryed/helm-charts/
+    type: application
+    urls:
+    - https://github.com/goatfryed/helm-charts/releases/download/better-spring-boot-0.2.0/better-spring-boot-0.2.0.tgz
+    version: 0.2.0
+generated: "2025-01-13T21:21:03.417500593Z"
