@@ -94,7 +94,8 @@ spec:
 
 {{- define "spring.container.activeProfiles" -}}
 {{
-  (include "spring.container.userProfiles" .)
+  (include "spring.container.debugProfiles" .)
+  | default (include "spring.container.userProfiles" .)
   | default (include "spring.container.defaultProfiles" .)
   | default "''"
 }}
@@ -119,6 +120,21 @@ spec:
 {{- $profiles = append $profiles $key -}}
 {{- end -}}
 {{- join ", " $profiles -}}
+{{- end -}}
+
+{{- define "spring.container.debugProfiles" -}}
+{{ $activeProfiles := .Values.debugDeployment.overrideProfiles }}
+{{- if not .Values.debugDeployment.enabled -}}
+{{- "" -}}
+{{- else if not $activeProfiles -}}
+{{- "" -}}
+{{- else if eq (typeOf $activeProfiles) "string" -}}
+  {{ $activeProfiles }}
+{{- else if eq (typeOf $activeProfiles) "[]interface {}" -}}
+  {{ join ", " $activeProfiles }}
+{{- else -}}
+  {{ required "Illegal argument for debugDeployment.overrideProfiles" nil }}
+{{- end -}}
 {{- end -}}
 
 {{- define "spring-boot.userConfigVolumeName" -}}

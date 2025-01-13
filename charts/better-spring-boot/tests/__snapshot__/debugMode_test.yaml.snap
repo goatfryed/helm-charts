@@ -1,4 +1,37 @@
-replaces run command:
+overrides profiles:
+  1: |
+    containers:
+      - env:
+          - name: SPRING_PROFILES_ACTIVE
+            value: debug, profile2
+        image: goatfryed/spring-boot-echo:latest
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          httpGet:
+            path: /
+            port: http
+        name: spring-boot
+        ports:
+          - containerPort: 80
+            name: http
+            protocol: TCP
+        readinessProbe:
+          httpGet:
+            path: /
+            port: http
+        resources: {}
+        securityContext: {}
+        volumeMounts:
+          - mountPath: /app/config/helm-config
+            name: helm-application-properties
+            readOnly: true
+    securityContext: {}
+    serviceAccountName: RELEASE-NAME-spring-boot
+    volumes:
+      - configMap:
+          name: RELEASE-NAME-spring-boot-application-properties
+        name: helm-application-properties
+overrides run command:
   1: |
     containers:
       - command:

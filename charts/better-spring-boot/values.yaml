@@ -149,3 +149,6 @@ debugDeployment:
   # by default, start container with idle wait process, so you can exec into it and investigate
   # or provide your own entrypoint command
   overrideCommand: ["sh", "-c", 'trap "exit 0" SIGTERM SIGINT; tail -f /dev/null & wait']
+  # alternatively, set debugDeployment.overrideCommand to nil and provide debug profiles
+  # for allowed types, see spring.profiles.active
+  overrideProfiles: ~

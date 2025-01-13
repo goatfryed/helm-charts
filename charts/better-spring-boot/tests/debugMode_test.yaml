@@ -2,7 +2,7 @@ suite: debug mode
 templates:
   - deployment.yaml
 tests:
-  - it: replaces run command
+  - it: overrides run command
     values:
       - "values/values.base.yaml"
     set:
@@ -12,3 +12,27 @@ tests:
       - template: deployment.yaml
         matchSnapshot:
           path: spec.template.spec
+  - it: overrides profiles
+    values:
+      - "values/values.base.yaml"
+    set:
+      spring.profiles.active: ["profile1","profile2"]
+      debugDeployment:
+        enabled: true
+        overrideCommand: ~
+        overrideProfiles: "debug, profile2"
+    asserts:
+      - template: deployment.yaml
+        matchSnapshot:
+          path: spec.template.spec
+  - it: fails illegal type at overrideProfiles
+    values:
+      - "values/values.base.yaml"
+    set:
+      debugDeployment:
+        enabled: true
+        overrideProfiles:
+          legal: alien
+    asserts:
+      - failedTemplate:
+          errorMessage: "Illegal argument for debugDeployment.overrideProfiles"
