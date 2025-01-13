@@ -1,0 +1,5 @@
+image:
+  repository: a/b
+debugDeployment:
+  enabled: true
+  overrideProfiles: "123"

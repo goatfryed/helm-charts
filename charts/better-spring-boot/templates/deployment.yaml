@@ -36,16 +36,17 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ required "image.repository must be provided" .Values.image.repository }}:{{ .Values.image.tag | default .Values.appVersion | default "latest" }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          {{- if and .Values.debugDeployment.enabled .Values.debugDeployment.overrideCommand }}
+          command:
+            {{- toYaml .Values.debugDeployment.overrideCommand | nindent 12 }}
+          {{- end }}
           env:
             {{- include "spring.container.env" . | nindent 12 }}
           ports:
             - name: http
               containerPort: {{ .Values.service.port }}
               protocol: TCP
-          livenessProbe:
-            {{- toYaml .Values.livenessProbe | nindent 12 }}
-          readinessProbe:
-            {{- toYaml .Values.readinessProbe | nindent 12 }}
+          {{- include "spring.container.healthChecks" . | nindent 10 }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
@@ -89,13 +90,22 @@ spec:
 {{- end -}}
 
 {{- define "spring.container.activeProfiles" -}}
+{{
+  (include "spring.container.debugProfiles" .)
+  | default (include "spring.container.userProfiles" .)
+  | default (include "spring.container.defaultProfiles" .)
+  | default "''"
+}}
+{{- end -}}
+
+{{- define "spring.container.userProfiles" -}}
 {{ $activeProfiles := .Values.spring.profiles.active }}
-{{- if eq (typeOf $activeProfiles) "string" -}}
+{{- if not $activeProfiles }}
+{{- "" -}}
+{{- else if eq (typeOf $activeProfiles) "string" -}}
   {{ $activeProfiles }}
 {{- else if eq (typeOf $activeProfiles) "[]interface {}" -}}
   {{ join ", " $activeProfiles }}
-{{- else if eq $activeProfiles nil -}}
-  {{- include "spring.container.defaultProfiles" . -}}
 {{- else -}}
   {{ required "Illegal argument for spring.container.activeProfiles" nil }}
 {{- end -}}
@@ -107,6 +117,21 @@ spec:
 {{- $profiles = append $profiles $key -}}
 {{- end -}}
 {{- join ", " $profiles -}}
+{{- end -}}
+
+{{- define "spring.container.debugProfiles" -}}
+{{ $activeProfiles := .Values.debugDeployment.overrideProfiles }}
+{{- if not .Values.debugDeployment.enabled -}}
+{{- "" -}}
+{{- else if not $activeProfiles -}}
+{{- "" -}}
+{{- else if eq (typeOf $activeProfiles) "string" -}}
+  {{ $activeProfiles }}
+{{- else if eq (typeOf $activeProfiles) "[]interface {}" -}}
+  {{ join ", " $activeProfiles }}
+{{- else -}}
+  {{ required "Illegal argument for debugDeployment.overrideProfiles" nil }}
+{{- end -}}
 {{- end -}}
 
 {{- define "spring-boot.userConfigVolumeName" -}}
@@ -142,5 +167,16 @@ user-application-properties-{{- . -}}
   subPath: {{ default "application.yaml" $config.secret.key }}
   readOnly: true
 {{ end -}}
+{{- end -}}
+{{- end -}}
+
+{{- define "spring.container.healthChecks" -}}
+{{- if and .Values.debugDeployment.enabled (not .Values.debugDeployment.healthChecksEnabled) -}}
+{{- "" -}}
+{{- else -}}
+livenessProbe:
+  {{- toYaml .Values.livenessProbe | nindent 2 }}
+readinessProbe:
+  {{- toYaml .Values.readinessProbe | nindent 2 }}
 {{- end -}}
 {{- end -}}
