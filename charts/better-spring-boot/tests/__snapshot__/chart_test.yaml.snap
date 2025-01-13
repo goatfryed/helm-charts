@@ -33,7 +33,7 @@ works with full configuration:
           containers:
             - env:
                 - name: SPRING_PROFILES_ACTIVE
-                  value: null
+                  value: ""
               image: goatfryed/spring-boot-echo:latest
               imagePullPolicy: IfNotPresent
               livenessProbe:
@@ -407,7 +407,7 @@ works with minimal configuration (pipeline-safe):
           containers:
             - env:
                 - name: SPRING_PROFILES_ACTIVE
-                  value: null
+                  value: ""
               image: goatfryed/spring-boot-echo:latest
               imagePullPolicy: IfNotPresent
               livenessProbe:
