@@ -1,0 +1,14 @@
+suite: debug mode
+templates:
+  - deployment.yaml
+tests:
+  - it: replaces run command
+    values:
+      - "values/values.base.yaml"
+    set:
+      debugDeployment:
+        enabled: true
+    asserts:
+      - template: deployment.yaml
+        matchSnapshot:
+          path: spec.template.spec

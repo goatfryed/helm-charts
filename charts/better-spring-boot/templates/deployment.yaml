@@ -36,6 +36,10 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ required "image.repository must be provided" .Values.image.repository }}:{{ .Values.image.tag | default .Values.appVersion | default "latest" }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          {{- if and .Values.debugDeployment.enabled .Values.debugDeployment.overrideCommand }}
+          command:
+            {{- toYaml .Values.debugDeployment.overrideCommand | nindent 12 }}
+          {{- end }}
           env:
             {{- include "spring.container.env" . | nindent 12 }}
           ports:

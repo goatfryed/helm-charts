@@ -138,3 +138,14 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+# Allows to override the spring-boot container with a debug entrypoint
+# mainly for convenience to investigate issues manually or usage with tools like mirrord
+# if you need more advanced overwrites, use a dedicated values.debug.yaml
+# You can easily toggle with
+# helm upgrade --reuse-values --set debugDeployment.enabled=true your-release goatfryed/better-spring-boot
+debugDeployment:
+  enabled: false
+  # by default, start container with idle wait process, so you can exec into it and investigate
+  # or provide your own entrypoint command
+  overrideCommand: ["sh", "-c", 'trap "exit 0" SIGTERM SIGINT; tail -f /dev/null & wait']

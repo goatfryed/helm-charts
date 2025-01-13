@@ -1,0 +1,37 @@
+replaces run command:
+  1: |
+    containers:
+      - command:
+          - sh
+          - -c
+          - trap "exit 0" SIGTERM SIGINT; tail -f /dev/null & wait
+        env:
+          - name: SPRING_PROFILES_ACTIVE
+            value: ""
+        image: goatfryed/spring-boot-echo:latest
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          httpGet:
+            path: /
+            port: http
+        name: spring-boot
+        ports:
+          - containerPort: 80
+            name: http
+            protocol: TCP
+        readinessProbe:
+          httpGet:
+            path: /
+            port: http
+        resources: {}
+        securityContext: {}
+        volumeMounts:
+          - mountPath: /app/config/helm-config
+            name: helm-application-properties
+            readOnly: true
+    securityContext: {}
+    serviceAccountName: RELEASE-NAME-spring-boot
+    volumes:
+      - configMap:
+          name: RELEASE-NAME-spring-boot-application-properties
+        name: helm-application-properties
