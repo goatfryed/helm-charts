@@ -152,3 +152,6 @@ debugDeployment:
   # alternatively, set debugDeployment.overrideCommand to nil and provide debug profiles
   # for allowed types, see spring.profiles.active
   overrideProfiles: ~
+  # if you don't boot your applications, healthChecks can't work.
+  # But you might also want to disable them running in debug profiles
+  healthChecksEnabled: false

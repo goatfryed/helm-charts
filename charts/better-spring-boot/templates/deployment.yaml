@@ -46,10 +46,7 @@ spec:
             - name: http
               containerPort: {{ .Values.service.port }}
               protocol: TCP
-          livenessProbe:
-            {{- toYaml .Values.livenessProbe | nindent 12 }}
-          readinessProbe:
-            {{- toYaml .Values.readinessProbe | nindent 12 }}
+          {{- include "spring.container.healthChecks" . | nindent 10 }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
@@ -170,5 +167,16 @@ user-application-properties-{{- . -}}
   subPath: {{ default "application.yaml" $config.secret.key }}
   readOnly: true
 {{ end -}}
+{{- end -}}
+{{- end -}}
+
+{{- define "spring.container.healthChecks" -}}
+{{- if and .Values.debugDeployment.enabled (not .Values.debugDeployment.healthChecksEnabled) -}}
+{{- "" -}}
+{{- else -}}
+livenessProbe:
+  {{- toYaml .Values.livenessProbe | nindent 2 }}
+readinessProbe:
+  {{- toYaml .Values.readinessProbe | nindent 2 }}
 {{- end -}}
 {{- end -}}

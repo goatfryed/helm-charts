@@ -36,3 +36,14 @@ tests:
     asserts:
       - failedTemplate:
           errorMessage: "Illegal argument for debugDeployment.overrideProfiles"
+  - it: adds health checks only if explicitly activated
+    values:
+      - "values/values.base.yaml"
+    set:
+      debugDeployment:
+        enabled: true
+        healthChecksEnabled: true
+    asserts:
+      - template: deployment.yaml
+        matchSnapshot:
+          path: spec.template.spec
