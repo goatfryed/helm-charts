@@ -16,7 +16,7 @@ release/roll-me: {{ print .Release.Revision "-" (randAlphaNum 5) | quote }}
   {{- if $appConfig.data }}
     {{- $activeConfig := dict }}
     {{- range $activeProfile := (sortAlpha $activeProfilesList) -}}
-      {{- $configFileName := include "better-spring-boot.propertiesConfigMap.configFileName" $activeProfile }}
+      {{- $configFileName := include "better-spring-boot.appConfigMap.configFileName" $activeProfile }}
       {{- $activeConfig := merge $activeConfig (pick $appConfig.data $configFileName) }}
     {{- end }}
     {{- $activeConfig | toYaml | sha256sum }}
@@ -38,4 +38,27 @@ release/roll-me: {{ print .Release.Revision "-" (randAlphaNum 5) | quote }}
 - name: SPRING_PROFILES_ACTIVE
   value: {{ default "''" $activeProfiles }}
   {{- end }}
+{{- end }}
+
+
+
+{{- define "better-spring-boot.deployment.appHealthChecks" }}
+{{- if and .Values.debugDeployment.enabled (not .Values.debugDeployment.healthChecksEnabled) }}
+{{- else }}
+{{- $livenessProbe := mergeOverwrite (deepCopy .Values.healthChecks.defaults) .Values.healthChecks.livenessProbe }}
+{{- if $livenessProbe.enabled }}
+livenessProbe:
+  {{- omit $livenessProbe "enabled" | toYaml | nindent 2 }}
+{{- end}}
+{{- $startupProbe := mergeOverwrite (deepCopy .Values.healthChecks.defaults) .Values.healthChecks.startupProbe }}
+{{- if $startupProbe.enabled }}
+startupProbe:
+  {{- omit $startupProbe "enabled" | toYaml | nindent 2 }}
+{{- end}}
+{{- $readinessProbe := mergeOverwrite (deepCopy .Values.healthChecks.defaults) .Values.healthChecks.readinessProbe }}
+{{- if $readinessProbe.enabled }}
+readinessProbe:
+  {{- omit $readinessProbe "enabled" | toYaml | nindent 2 }}
+{{- end}}
+{{- end }}
 {{- end }}

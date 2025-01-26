@@ -1,24 +1,12 @@
 suite: test chart
 tests:
-  - it: works with minimal configuration (pipeline-safe)
+  - it: works with minimal configuration
     set:
       image.repository: goatfryed/spring-boot-echo
     asserts:
-      - template: deployment.yaml
-        matchSnapshot:
-      - template: configMap.appConfig.yaml
-        matchSnapshot:
-      - template: service.yaml
-        matchSnapshot:
-      - template: serviceaccount.yaml
-        matchSnapshot:
-  - it: works with full configuration
-    set:
-      image.repository: goatfryed/spring-boot-echo
-    asserts:
-      - matchSnapshot:
+      - matchSnapshot: {}
   - it: works with maximal configuration
     values:
       - "values/values.chart.yaml"
     asserts:
-      - matchSnapshot:
+      - matchSnapshot: {}

@@ -10,6 +10,8 @@ image:
   tag: "user-tag"
 
 spring:
+  serverPort: 8083
+  managementPort: 8090
   profiles:
     active: "banana, funk, inspector"
   config:
@@ -92,23 +94,25 @@ resources:
     cpu: 250m
     memory: 128Mi
 
-livenessProbe:
-  httpGet:
-    path: /health
-    port: http
-  initialDelaySeconds: 5
-  periodSeconds: 10
-  timeoutSeconds: 3
-  failureThreshold: 3
-
-readinessProbe:
-  httpGet:
-    path: /ready
-    port: http
-  initialDelaySeconds: 5
-  periodSeconds: 10
-  timeoutSeconds: 3
-  failureThreshold: 3
+healthChecks:
+  defaults:
+    initialDelaySeconds: 42
+    successThreshold: 7
+    timeoutSeconds: 3
+  livenessProbe:
+    initialDelaySeconds: 5
+    periodSeconds: 10
+    failureThreshold: 3
+  readinessProbe:
+    httpGet:
+      path: /ready
+    periodSeconds: 10
+    timeoutSeconds: 7
+    failureThreshold: 3
+  startupProbe:
+    enabled: false
+    httpGet:
+      path: /actuator/health/fuck
 
 autoscaling:
   enabled: true

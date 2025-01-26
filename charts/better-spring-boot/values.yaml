@@ -11,6 +11,10 @@ image:
   tag: ""
 
 spring:
+  # if you configure server.port, set this to the same value
+  serverPort: 8080
+  # if you configure management.server.port, set this to the same value
+  managementPort: ~
   profiles:
     # Configure your activated profiles here
     # defaults to all profiles listed in config below
@@ -109,14 +113,32 @@ resources: {}
   #   cpu: 100m
   #   memory: 128Mi
 
-livenessProbe:
-  httpGet:
-    path: /
-    port: http
-readinessProbe:
-  httpGet:
-    path: /
-    port: http
+# Configure health checks for the spring application container
+healthChecks:
+  # configure defaults for the specific probes
+  # https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
+  defaults:
+    enabled: true
+    # for spring health checks, check
+    # https://docs.spring.io/spring-boot/docs/2.4.1/reference/html/production-ready-features.html#production-ready-kubernetes-probes
+    httpGet:
+      path: /actuator/health
+      port: http-management
+    periodSeconds: 5
+  startupProbe:
+    httpGet:
+      path: /actuator/health/liveness
+    successThreshold: 1
+    failureThreshold: 60
+  livenessProbe:
+    httpGet:
+      path: /actuator/health/liveness
+    successThreshold: 1
+    failureThreshold: 12
+  readinessProbe:
+    httpGet:
+      path: /actuator/health/readiness
+    failureThreshold: 3
 
 autoscaling:
   enabled: false
@@ -144,6 +166,25 @@ tolerations: []
 
 affinity: {}
 
+# Additional deployment rules
+deployment:
+  # Settings that add labels to improve when the application pod is recreated and therefore restarted
+  # For more advanced use cases, consider adding a self-managed label to podLabels.
+  # supported strategies:
+  # "values-changed": the spring pod is recreated, if active spring configuration is changed, based on best effort basis
+  # this only applies to changes in spring.config.{profiles}.values. Reference changes can't be detected by helm.
+  # this is filtered to profiles that are enabled
+  # "always": on every helm release, pod recreation is forced
+  # others or null to disable
+  recreatePodStrategy: "values-changed"
+  # define spec.template.spec.initContainers
+  # https://kubernetes.io/docs/concepts/workloads/pods/init-containers/
+  # https://kubernetes.io/docs/concepts/workloads/pods/sidecar-containers/
+  initContainers: []
+  # define spec.template.spec.containers in addition to the default spring-boot application container
+  # note that usage of initContainers is preferred. See sidecar containers above
+  extraContainers: []
+
 # Allows to override the spring-boot container with a debug entrypoint
 # mainly for convenience to investigate issues manually or usage with tools like mirrord
 # if you need more advanced overwrites, use a dedicated values.debug.yaml
@@ -160,15 +201,3 @@ debugDeployment:
   # if you don't boot your applications, healthChecks can't work.
   # But you might also want to disable them running in debug profiles
   healthChecksEnabled: false
-
-# Additional deployment rules
-deployment:
-  # Settings that add labels to improve when the application pod is recreated and therefore restarted
-  # For more advanced use cases, consider adding a self-managed label to podLabels.
-  # supported strategies:
-  # "values-changed": the spring pod is recreated, if active spring configuration is changed, based on best effort basis
-  # this only applies to changes in spring.config.{profiles}.values. Reference changes can't be detected by helm.
-  # this is filtered to profiles that are enabled
-  # "always": on every helm release, pod recreation is forced
-  # others or null to disable
-  recreatePodStrategy: "values-changed"

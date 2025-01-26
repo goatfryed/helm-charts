@@ -1,37 +1,3 @@
-adds health checks only if explicitly activated:
-  1: |
-    containers:
-      - command:
-          - sh
-          - -c
-          - trap "exit 0" SIGTERM SIGINT; tail -f /dev/null & wait
-        image: goatfryed/spring-boot-echo:latest
-        imagePullPolicy: IfNotPresent
-        livenessProbe:
-          httpGet:
-            path: /
-            port: http
-        name: spring-boot
-        ports:
-          - containerPort: 80
-            name: http
-            protocol: TCP
-        readinessProbe:
-          httpGet:
-            path: /
-            port: http
-        resources: {}
-        securityContext: {}
-        volumeMounts:
-          - mountPath: /app/config/helm-config
-            name: helm-application-properties
-            readOnly: true
-    securityContext: {}
-    serviceAccountName: RELEASE-NAME-spring-boot
-    volumes:
-      - configMap:
-          name: RELEASE-NAME-spring-boot-app-config
-        name: helm-application-properties
 overrides profiles:
   1: |
     containers:
@@ -42,8 +8,11 @@ overrides profiles:
         imagePullPolicy: IfNotPresent
         name: spring-boot
         ports:
-          - containerPort: 80
+          - containerPort: 8080
             name: http
+            protocol: TCP
+          - containerPort: 8080
+            name: http-management
             protocol: TCP
         resources: {}
         securityContext: {}
@@ -68,8 +37,11 @@ overrides run command:
         imagePullPolicy: IfNotPresent
         name: spring-boot
         ports:
-          - containerPort: 80
+          - containerPort: 8080
             name: http
+            protocol: TCP
+          - containerPort: 8080
+            name: http-management
             protocol: TCP
         resources: {}
         securityContext: {}

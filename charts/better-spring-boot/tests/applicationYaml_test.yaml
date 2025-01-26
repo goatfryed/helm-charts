@@ -24,8 +24,9 @@ tests:
             name: SPRING_PROFILES_ACTIVE
             value: "profile1, profile2, profile3, profile4"
   - it: mounts configuration values
+    values:
+      - "values/values.base.yaml"
     set:
-      image.repository: goatfryed/spring-boot-echo
       spring.config.userConfig.values:
         foo: bar
         how:
@@ -35,16 +36,18 @@ tests:
         matchSnapshot:
           path: spec.template.spec
   - it: mounts referenced configMaps
+    values:
+      - "values/values.base.yaml"
     set:
-      image.repository: goatfryed/spring-boot-echo
       spring.config.userConfig.configMap.name: user-defined-config-map
     asserts:
       - template: deployment.yaml
         matchSnapshot:
           path: spec.template.spec
   - it: mounts referenced secrets
+    values:
+      - "values/values.base.yaml"
     set:
-      image.repository: goatfryed/spring-boot-echo
       spring.config.userConfig.secret.name: user-defined-secret
     asserts:
       - template: deployment.yaml
