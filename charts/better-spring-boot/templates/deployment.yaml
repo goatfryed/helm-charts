@@ -1,16 +1,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "spring-boot.fullname" . }}
+  name: {{ include "better-spring-boot.fullname" . }}
   labels:
-    {{- include "spring-boot.labels" . | nindent 4 }}
+    {{- include "better-spring-boot.labels" . | nindent 4 }}
 spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
   {{- end }}
   selector:
     matchLabels:
-      {{- include "spring-boot.selectorLabels" . | nindent 6 }}
+      {{- include "better-spring-boot.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       {{- with .Values.podAnnotations }}
@@ -18,7 +18,7 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{- include "spring-boot.labels" . | nindent 8 }}
+        {{- include "better-spring-boot.labels" . | nindent 8 }}
         {{- with .Values.podLabels }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
@@ -28,7 +28,7 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "spring-boot.serviceAccountName" . }}
+      serviceAccountName: {{ include "better-spring-boot.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
@@ -59,7 +59,7 @@ spec:
             - name: helm-application-properties
               mountPath: /app/config/helm-config
               readOnly: true
-            {{- include "spring-boot.userConfigMounts" . | nindent 12 }}
+            {{- include "better-spring-boot.userConfigMounts" . | nindent 12 }}
           {{- with .Values.volumeMounts }}
             {{- toYaml . | nindent 12 }}
           {{- end }}
@@ -73,8 +73,8 @@ spec:
       volumes:
         - name: helm-application-properties
           configMap:
-            name: {{ include "spring-boot.propertiesConfigMapName" . }}
-        {{- include "spring-boot.userConfigVolumes" . | nindent 8 }}
+            name: {{ include "better-spring-boot.propertiesConfigMapName" . }}
+        {{- include "better-spring-boot.userConfigVolumes" . | nindent 8 }}
       {{- with .Values.volumes }}
         {{- toYaml . | nindent 8 }}
       {{- end }}
@@ -91,15 +91,15 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
 
-{{- define "spring.container.activeProfiles" -}}
+{{- define "better-spring-boot.deploymentactiveProfiles" -}}
 {{
-  (include "spring.container.debugProfiles" .)
-  | default (include "spring.container.userProfiles" .)
-  | default (include "spring.container.defaultProfiles" .)
+  (include "better-spring-boot.deploymentdebugProfiles" .)
+  | default (include "better-spring-boot.deploymentuserProfiles" .)
+  | default (include "better-spring-boot.deploymentdefaultProfiles" .)
 }}
 {{- end -}}
 
-{{- define "spring.container.userProfiles" -}}
+{{- define "better-spring-boot.deploymentuserProfiles" -}}
 {{ $activeProfiles := .Values.spring.profiles.active }}
 {{- if not $activeProfiles }}
 {{- "" -}}
@@ -112,7 +112,7 @@ spec:
 {{- end -}}
 {{- end -}}
 
-{{- define "spring.container.defaultProfiles" -}}
+{{- define "better-spring-boot.deploymentdefaultProfiles" -}}
 {{- $profiles := list -}}
 {{- range $key,$value := .Values.spring.config -}}
 {{- $profiles = append $profiles $key -}}
@@ -120,7 +120,7 @@ spec:
 {{- join ", " $profiles -}}
 {{- end -}}
 
-{{- define "spring.container.debugProfiles" -}}
+{{- define "better-spring-boot.deploymentdebugProfiles" -}}
 {{ $activeProfiles := .Values.debugDeployment.overrideProfiles }}
 {{- if not .Values.debugDeployment.enabled -}}
 {{- "" -}}
@@ -135,35 +135,35 @@ spec:
 {{- end -}}
 {{- end -}}
 
-{{- define "spring-boot.userConfigVolumeName" -}}
+{{- define "better-spring-boot.userConfigVolumeName" -}}
 user-application-properties-{{- . -}}
 {{- end -}}
 
-{{- define "spring-boot.userConfigVolumes" -}}
+{{- define "better-spring-boot.userConfigVolumes" -}}
 {{- range $profile,$config := .Values.spring.config -}}
 {{- if $config.configMap -}}
-- name: {{ include "spring-boot.userConfigVolumeName" $profile }}
+- name: {{ include "better-spring-boot.userConfigVolumeName" $profile }}
   configMap:
     name: {{ required (printf "spring.config.%s.configMap.name must be given" $profile) $config.configMap.name }}
 {{ else if $config.secret -}}
-- name: {{ include "spring-boot.userConfigVolumeName" $profile }}
+- name: {{ include "better-spring-boot.userConfigVolumeName" $profile }}
   secret:
     secretName: {{ required (printf "spring.config.%s.configMap.name must be given" $profile) $config.secret.name }}
 {{ end -}}
 {{- end -}}
 {{- end -}}
 
-{{- define "spring-boot.userConfigMounts" -}}
+{{- define "better-spring-boot.userConfigMounts" -}}
 {{- range $profile,$config := .Values.spring.config -}}
 {{- if and $config.configMap $config.secret -}}
   {{ fail (printf "use either configMap or secret in spring.config.%s" $profile) }}
 {{- else if $config.configMap -}}
-- name: {{ include "spring-boot.userConfigVolumeName" $profile }}
+- name: {{ include "better-spring-boot.userConfigVolumeName" $profile }}
   mountPath: /app/config/config-map/application-{{ $profile }}.{{ default "yaml" $config.configMap.type }}
   subPath: {{ default "application.yaml" $config.configMap.key }}
   readOnly: true
 {{ else if $config.secret -}}
-- name: {{ include "spring-boot.userConfigVolumeName" $profile }}
+- name: {{ include "better-spring-boot.userConfigVolumeName" $profile }}
   mountPath: /app/config/config-map/application-{{ $profile }}.{{ default "yaml" $config.secret.type }}
   subPath: {{ default "application.yaml" $config.secret.key }}
   readOnly: true

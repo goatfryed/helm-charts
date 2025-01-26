@@ -10,7 +10,7 @@ release/roll-me: {{ print .Release.Revision "-" (randAlphaNum 5) | quote }}
 {{- end }}
 
 {{- define "better-spring-boot.deployment.helmAppConfigChecksum" }}
-  {{- $activeProfiles := include "spring.container.activeProfiles" . }}
+  {{- $activeProfiles := include "better-spring-boot.deploymentactiveProfiles" . }}
   {{- $activeProfilesList :=  (regexSplit ", ?" $activeProfiles -1) }}
   {{- $appConfig := include (print $.Template.BasePath "/configMap.appConfig.yaml") . | fromYaml }}
   {{- if $appConfig.data }}
@@ -33,7 +33,7 @@ release/roll-me: {{ print .Release.Revision "-" (randAlphaNum 5) | quote }}
   value: {{ default "''" $value }}
   {{- end }}
   {{- end }}
-  {{- $activeProfiles := include "spring.container.activeProfiles" . }}
+  {{- $activeProfiles := include "better-spring-boot.deploymentactiveProfiles" . }}
   {{- with $activeProfiles }}
 - name: SPRING_PROFILES_ACTIVE
   value: {{ default "''" $activeProfiles }}
