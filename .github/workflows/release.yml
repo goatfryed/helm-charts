@@ -1,10 +1,10 @@
 name: Release Helm Chart
 
 on:
-  release:
-    types:
-      - published
-  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - ci/**
 
 jobs:
   test-before-release:
@@ -16,58 +16,23 @@ jobs:
     needs: test-before-release
     runs-on: ubuntu-latest
     permissions:
-      contents: read
-      pages: write
-      id-token: write
+      contents: write
 
     steps:
-      # Step 1: Checkout code
-      - name: Checkout Code
-        uses: actions/checkout@v4
-
-      # Step 2: Setup Helm
-      - name: Setup Helm
-        run: |
-          curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
-
-      # Step 3: Create the target directory
-      - name: Create Target Directory
-        run: |
-          mkdir -p build/pages/charts
-
-      # Step 4: Package the Helm chart
-      - name: Package Helm Chart
-        run: |
-          helm package charts/better-spring-boot --destination build/pages
-
-      # Step 5: Generate the Helm repository index
-      - name: Generate Index
-        env:
-          CHART_REPO_URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}
-        run: |
-          helm repo index build/pages --url $CHART_REPO_URL
-
-      - name: Add redirect
-        env:
-          REDIRECT_URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/index.yaml
-        run: |
-          cat <<EOF > build/pages/index.html
-          <!DOCTYPE html>
-          <meta charset="utf-8">
-          <title>Redirecting to ${REDIRECT_URL}</title>
-          <meta http-equiv="refresh" content="0; URL=${REDIRECT_URL}">
-          <link rel="canonical" href="${REDIRECT_URL}">
-          EOF
-      - name: Add artifacthub.io metadata
-        run: echo "${{ vars.artifacthub_repo_yml }}" > build/pages/artifacthub-repo.yml
-
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
-      - name: Upload Artifact
-        uses: actions/upload-pages-artifact@v3
+      - name: Checkout
+        uses: actions/checkout@v3
         with:
-          # upload entire directory
-          path: 'build/pages'
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+          fetch-depth: 0
+
+      - name: Configure Git
+        run: |
+          git config user.name "${{ github.actor }}"
+          git config user.email "${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com"
+
+      - name: Install Helm
+        uses: azure/setup-helm@v4
+
+      - name: Run chart-releaser
+        uses: helm/chart-releaser-action@v1.6.0
+        env:
+          CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
