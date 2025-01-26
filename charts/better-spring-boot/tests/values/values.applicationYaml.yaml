@@ -27,3 +27,7 @@ spring:
         name: user-defined-config-map
         key: app.yml
         type: yaml
+
+healthChecks:
+  defaults:
+    enabled: false

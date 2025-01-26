@@ -147,4 +147,37 @@ tests:
       - template: deployment.yaml
         notExists:
           path: spec.template.metadata.labels.release/roll-me
+  - it: supports startup probe
+    values:
+      - "values/values.base.yaml"
+    set:
+      healthChecks:
+        startupProbe:
+          enabled: true
+    asserts:
+      - template: deployment.yaml
+        exists:
+          path: spec.template.spec.containers[0].startupProbe
+  - it: supports liveness probe
+    values:
+      - "values/values.base.yaml"
+    set:
+      healthChecks:
+        livenessProbe:
+          enabled: true
+    asserts:
+      - template: deployment.yaml
+        exists:
+          path: spec.template.spec.containers[0].livenessProbe
+  - it: supports readiness probe
+    values:
+      - "values/values.base.yaml"
+    set:
+      healthChecks:
+        readinessProbe:
+          enabled: true
+    asserts:
+      - template: deployment.yaml
+        exists:
+          path: spec.template.spec.containers[0].readinessProbe
 

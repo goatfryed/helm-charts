@@ -1,121 +1,3 @@
-works with full configuration:
-  1: |
-    raw: |
-      1. Get the application URL by running these commands:
-        export POD_NAME=$(kubectl get pods --namespace NAMESPACE -l "app.kubernetes.io/name=spring-boot,app.kubernetes.io/instance=RELEASE-NAME" -o jsonpath="{.items[0].metadata.name}")
-        export CONTAINER_PORT=$(kubectl get pod --namespace NAMESPACE $POD_NAME -o jsonpath="{.spec.containers[0].ports[0].containerPort}")
-        echo "Visit http://127.0.0.1:8080 to use your application"
-        kubectl --namespace NAMESPACE port-forward $POD_NAME 8080:$CONTAINER_PORT
-  2: |
-    apiVersion: v1
-    data: null
-    kind: ConfigMap
-    metadata:
-      name: RELEASE-NAME-spring-boot-app-config
-  3: |
-    apiVersion: apps/v1
-    kind: Deployment
-    metadata:
-      labels:
-        app.kubernetes.io/instance: RELEASE-NAME
-        app.kubernetes.io/managed-by: Helm
-        app.kubernetes.io/name: spring-boot
-        helm.sh/chart: better-spring-boot-0.2.0
-      name: RELEASE-NAME-spring-boot
-    spec:
-      replicas: 1
-      selector:
-        matchLabels:
-          app.kubernetes.io/instance: RELEASE-NAME
-          app.kubernetes.io/name: spring-boot
-      template:
-        metadata:
-          labels:
-            app.kubernetes.io/instance: RELEASE-NAME
-            app.kubernetes.io/managed-by: Helm
-            app.kubernetes.io/name: spring-boot
-            helm.sh/chart: better-spring-boot-0.2.0
-        spec:
-          containers:
-            - image: goatfryed/spring-boot-echo:latest
-              imagePullPolicy: IfNotPresent
-              livenessProbe:
-                httpGet:
-                  path: /
-                  port: http
-              name: spring-boot
-              ports:
-                - containerPort: 80
-                  name: http
-                  protocol: TCP
-              readinessProbe:
-                httpGet:
-                  path: /
-                  port: http
-              resources: {}
-              securityContext: {}
-              volumeMounts:
-                - mountPath: /app/config/helm-config
-                  name: helm-application-properties
-                  readOnly: true
-          securityContext: {}
-          serviceAccountName: RELEASE-NAME-spring-boot
-          volumes:
-            - configMap:
-                name: RELEASE-NAME-spring-boot-app-config
-              name: helm-application-properties
-  4: |
-    apiVersion: v1
-    kind: Service
-    metadata:
-      labels:
-        app.kubernetes.io/instance: RELEASE-NAME
-        app.kubernetes.io/managed-by: Helm
-        app.kubernetes.io/name: spring-boot
-        helm.sh/chart: better-spring-boot-0.2.0
-      name: RELEASE-NAME-spring-boot
-    spec:
-      ports:
-        - name: http
-          port: 80
-          protocol: TCP
-          targetPort: http
-      selector:
-        app.kubernetes.io/instance: RELEASE-NAME
-        app.kubernetes.io/name: spring-boot
-      type: ClusterIP
-  5: |
-    apiVersion: v1
-    automountServiceAccountToken: true
-    kind: ServiceAccount
-    metadata:
-      labels:
-        app.kubernetes.io/instance: RELEASE-NAME
-        app.kubernetes.io/managed-by: Helm
-        app.kubernetes.io/name: spring-boot
-        helm.sh/chart: better-spring-boot-0.2.0
-      name: RELEASE-NAME-spring-boot
-  6: |
-    apiVersion: v1
-    kind: Pod
-    metadata:
-      annotations:
-        helm.sh/hook: test
-      labels:
-        app.kubernetes.io/instance: RELEASE-NAME
-        app.kubernetes.io/managed-by: Helm
-        app.kubernetes.io/name: spring-boot
-        helm.sh/chart: better-spring-boot-0.2.0
-      name: RELEASE-NAME-spring-boot-test-connection
-    spec:
-      containers:
-        - args:
-            - RELEASE-NAME-spring-boot:80
-          command:
-            - wget
-          image: busybox
-          name: wget
-      restartPolicy: Never
 works with maximal configuration:
   1: |
     raw: |
@@ -193,24 +75,29 @@ works with maximal configuration:
               livenessProbe:
                 failureThreshold: 3
                 httpGet:
-                  path: /health
-                  port: http
+                  path: /actuator/health/liveness
+                  port: http-management
                 initialDelaySeconds: 5
                 periodSeconds: 10
+                successThreshold: 1
                 timeoutSeconds: 3
               name: spring-boot
               ports:
-                - containerPort: 8080
+                - containerPort: 8083
                   name: http
+                  protocol: TCP
+                - containerPort: 8090
+                  name: http-management
                   protocol: TCP
               readinessProbe:
                 failureThreshold: 3
                 httpGet:
                   path: /ready
-                  port: http
-                initialDelaySeconds: 5
+                  port: http-management
+                initialDelaySeconds: 42
                 periodSeconds: 10
-                timeoutSeconds: 3
+                successThreshold: 7
+                timeoutSeconds: 7
               resources:
                 limits:
                   cpu: 500m
@@ -394,8 +281,15 @@ works with maximal configuration:
           image: busybox
           name: wget
       restartPolicy: Never
-works with minimal configuration (pipeline-safe):
+works with minimal configuration:
   1: |
+    raw: |
+      1. Get the application URL by running these commands:
+        export POD_NAME=$(kubectl get pods --namespace NAMESPACE -l "app.kubernetes.io/name=spring-boot,app.kubernetes.io/instance=RELEASE-NAME" -o jsonpath="{.items[0].metadata.name}")
+        export CONTAINER_PORT=$(kubectl get pod --namespace NAMESPACE $POD_NAME -o jsonpath="{.spec.containers[0].ports[0].containerPort}")
+        echo "Visit http://127.0.0.1:8080 to use your application"
+        kubectl --namespace NAMESPACE port-forward $POD_NAME 8080:$CONTAINER_PORT
+  2: |
     apiVersion: apps/v1
     kind: Deployment
     metadata:
@@ -423,20 +317,35 @@ works with minimal configuration (pipeline-safe):
             - image: goatfryed/spring-boot-echo:latest
               imagePullPolicy: IfNotPresent
               livenessProbe:
+                failureThreshold: 12
                 httpGet:
-                  path: /
-                  port: http
+                  path: /actuator/health/liveness
+                  port: http-management
+                periodSeconds: 5
+                successThreshold: 1
               name: spring-boot
               ports:
-                - containerPort: 80
+                - containerPort: 8080
                   name: http
                   protocol: TCP
+                - containerPort: 8080
+                  name: http-management
+                  protocol: TCP
               readinessProbe:
+                failureThreshold: 3
                 httpGet:
-                  path: /
-                  port: http
+                  path: /actuator/health/readiness
+                  port: http-management
+                periodSeconds: 5
               resources: {}
               securityContext: {}
+              startupProbe:
+                failureThreshold: 60
+                httpGet:
+                  path: /actuator/health/liveness
+                  port: http-management
+                periodSeconds: 5
+                successThreshold: 1
               volumeMounts:
                 - mountPath: /app/config/helm-config
                   name: helm-application-properties
@@ -447,12 +356,6 @@ works with minimal configuration (pipeline-safe):
             - configMap:
                 name: RELEASE-NAME-spring-boot-app-config
               name: helm-application-properties
-  2: |
-    apiVersion: v1
-    data: null
-    kind: ConfigMap
-    metadata:
-      name: RELEASE-NAME-spring-boot-app-config
   3: |
     apiVersion: v1
     kind: Service
@@ -484,3 +387,24 @@ works with minimal configuration (pipeline-safe):
         app.kubernetes.io/name: spring-boot
         helm.sh/chart: better-spring-boot-0.2.0
       name: RELEASE-NAME-spring-boot
+  5: |
+    apiVersion: v1
+    kind: Pod
+    metadata:
+      annotations:
+        helm.sh/hook: test
+      labels:
+        app.kubernetes.io/instance: RELEASE-NAME
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: spring-boot
+        helm.sh/chart: better-spring-boot-0.2.0
+      name: RELEASE-NAME-spring-boot-test-connection
+    spec:
+      containers:
+        - args:
+            - RELEASE-NAME-spring-boot:80
+          command:
+            - wget
+          image: busybox
+          name: wget
+      restartPolicy: Never

@@ -6,19 +6,14 @@ injects application properties spring-container:
             value: profile1, profile2, profile3, profile4
         image: goatfryed/spring-boot-echo:latest
         imagePullPolicy: IfNotPresent
-        livenessProbe:
-          httpGet:
-            path: /
-            port: http
         name: spring-boot
         ports:
-          - containerPort: 80
+          - containerPort: 8080
             name: http
             protocol: TCP
-        readinessProbe:
-          httpGet:
-            path: /
-            port: http
+          - containerPort: 8080
+            name: http-management
+            protocol: TCP
         resources: {}
         securityContext: {}
         volumeMounts:
@@ -67,19 +62,14 @@ mounts configuration values:
             value: userConfig
         image: goatfryed/spring-boot-echo:latest
         imagePullPolicy: IfNotPresent
-        livenessProbe:
-          httpGet:
-            path: /
-            port: http
         name: spring-boot
         ports:
-          - containerPort: 80
+          - containerPort: 8080
             name: http
             protocol: TCP
-        readinessProbe:
-          httpGet:
-            path: /
-            port: http
+          - containerPort: 8080
+            name: http-management
+            protocol: TCP
         resources: {}
         securityContext: {}
         volumeMounts:
@@ -100,19 +90,14 @@ mounts referenced configMaps:
             value: userConfig
         image: goatfryed/spring-boot-echo:latest
         imagePullPolicy: IfNotPresent
-        livenessProbe:
-          httpGet:
-            path: /
-            port: http
         name: spring-boot
         ports:
-          - containerPort: 80
+          - containerPort: 8080
             name: http
             protocol: TCP
-        readinessProbe:
-          httpGet:
-            path: /
-            port: http
+          - containerPort: 8080
+            name: http-management
+            protocol: TCP
         resources: {}
         securityContext: {}
         volumeMounts:
@@ -140,19 +125,14 @@ mounts referenced secrets:
             value: userConfig
         image: goatfryed/spring-boot-echo:latest
         imagePullPolicy: IfNotPresent
-        livenessProbe:
-          httpGet:
-            path: /
-            port: http
         name: spring-boot
         ports:
-          - containerPort: 80
+          - containerPort: 8080
             name: http
             protocol: TCP
-        readinessProbe:
-          httpGet:
-            path: /
-            port: http
+          - containerPort: 8080
+            name: http-management
+            protocol: TCP
         resources: {}
         securityContext: {}
         volumeMounts:

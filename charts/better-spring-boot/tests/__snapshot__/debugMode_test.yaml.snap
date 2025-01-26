@@ -7,19 +7,14 @@ adds health checks only if explicitly activated:
           - trap "exit 0" SIGTERM SIGINT; tail -f /dev/null & wait
         image: goatfryed/spring-boot-echo:latest
         imagePullPolicy: IfNotPresent
-        livenessProbe:
-          httpGet:
-            path: /
-            port: http
         name: spring-boot
         ports:
-          - containerPort: 80
+          - containerPort: 8080
             name: http
             protocol: TCP
-        readinessProbe:
-          httpGet:
-            path: /
-            port: http
+          - containerPort: 8080
+            name: http-management
+            protocol: TCP
         resources: {}
         securityContext: {}
         volumeMounts:
@@ -42,8 +37,11 @@ overrides profiles:
         imagePullPolicy: IfNotPresent
         name: spring-boot
         ports:
-          - containerPort: 80
+          - containerPort: 8080
             name: http
+            protocol: TCP
+          - containerPort: 8080
+            name: http-management
             protocol: TCP
         resources: {}
         securityContext: {}
@@ -68,8 +66,11 @@ overrides run command:
         imagePullPolicy: IfNotPresent
         name: spring-boot
         ports:
-          - containerPort: 80
+          - containerPort: 8080
             name: http
+            protocol: TCP
+          - containerPort: 8080
+            name: http-management
             protocol: TCP
         resources: {}
         securityContext: {}
