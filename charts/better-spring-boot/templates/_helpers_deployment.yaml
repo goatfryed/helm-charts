@@ -19,3 +19,20 @@ release/checksum/app-config: {{ . }}
     {{- end }}
   {{- end}}
 {{- end }}
+
+
+{{- define "better-spring-boot.deployment.containerEnv" }}
+  {{- $envVars := .Values.spring.environmentVariable }}
+  {{- $envVars = omit $envVars "SPRING_PROFILES_ACTIVE" "SPRING_CONFIG_LOCATION" }}
+  {{- range $key, $value := $envVars }}
+  {{- if ne $value nil }}
+- name: {{ $key }}
+  value: {{ default "''" $value }}
+  {{- end }}
+  {{- end }}
+  {{- $activeProfiles := include "spring.container.activeProfiles" . }}
+  {{- with $activeProfiles }}
+- name: SPRING_PROFILES_ACTIVE
+  value: {{ default "''" $activeProfiles }}
+  {{- end }}
+{{- end }}

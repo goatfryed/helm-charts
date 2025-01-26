@@ -1,6 +1,7 @@
 suite: test deployment
 templates:
   - deployment.yaml
+  - configMap.appConfig.yaml
 tests:
   - it: supports profiles as strings
     set:
@@ -8,7 +9,8 @@ tests:
       spring.profiles.active: "k8s, local, something"
       deployment.recreatePods.onSpringConfigChanged: false
     asserts:
-      - equal:
+      - template: deployment.yaml
+        equal:
           path: spec.template.spec.containers[0].env[0]
           value:
             name: SPRING_PROFILES_ACTIVE
@@ -19,8 +21,94 @@ tests:
       spring.profiles.active: [k8s, local, something]
       deployment.recreatePods.onSpringConfigChanged: false
     asserts:
-      - equal:
+      - template: deployment.yaml
+        equal:
           path: spec.template.spec.containers[0].env[0]
           value:
             name: SPRING_PROFILES_ACTIVE
             value: "k8s, local, something"
+  - it: calculates checksum over app config
+    set:
+      image.repository: goatfryed/spring-boot-echo
+      spring.config:
+        profile1:
+          values:
+            foo: foo
+        profile2:
+          values:
+            bar: bar
+    asserts:
+      - template: deployment.yaml
+        equal:
+          path: spec.template.metadata.labels.release/checksum/app-config
+          value: 3d9a1b9ff8249efd74f1fd196e6e4f5bf7d51fc4dcfb855844b380ce9e311c31
+  - it: calculates checksum over app config with stable sort
+    set:
+      image:
+        repository: goatfryed/spring-boot-echo
+      spring:
+        profiles:
+          active: profile2, profile1
+        config:
+          profile2:
+            values:
+              bar: bar
+          profile1:
+            values:
+              foo: foo
+    asserts:
+      - template: deployment.yaml
+        equal:
+          path: spec.template.metadata.labels.release/checksum/app-config
+          value: 3d9a1b9ff8249efd74f1fd196e6e4f5bf7d51fc4dcfb855844b380ce9e311c31
+  - it: calculates checksum over active app config
+    set:
+      image.repository: goatfryed/spring-boot-echo
+      spring:
+        profiles:
+          active: profile1, profile2
+        config:
+          profile1:
+            values:
+              foo: foo
+          profile2:
+            values:
+              bar: bar
+          profile3:
+            values:
+              foo: bar
+    asserts:
+      - template: deployment.yaml
+        equal:
+          path: spec.template.metadata.labels.release/checksum/app-config
+          value: 3d9a1b9ff8249efd74f1fd196e6e4f5bf7d51fc4dcfb855844b380ce9e311c31
+  - it: supports environment variables
+    set:
+      image.repository: goatfryed/spring-boot-echo
+      spring.environmentVariable:
+        FOO: BAR
+        CHUCK: NORRIS
+        MUTE: ""
+        SILENT: ~
+    asserts:
+      - template: deployment.yaml
+        equal:
+          path: spec.template.spec.containers[0].env
+          value:
+            - name: CHUCK
+              value: NORRIS
+            - name: FOO
+              value: BAR
+            - name: MUTE
+              value: ""
+  - it: omits managed environment variables
+    set:
+      image.repository: goatfryed/spring-boot-echo
+      spring.environmentVariable:
+        SPRING_PROFILES_ACTIVE: test
+        SPRING_CONFIG_LOCATION: /other/path
+    asserts:
+      - template: deployment.yaml
+        notExists:
+          path: spec.template.spec.containers[0].env
+
