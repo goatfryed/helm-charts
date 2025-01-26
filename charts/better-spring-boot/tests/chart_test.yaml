@@ -10,3 +10,9 @@ tests:
       - "values/values.chart.yaml"
     asserts:
       - matchSnapshot: {}
+  - it: omits empty app config map
+    values:
+      - "values/values.base.yaml"
+    asserts:
+      - template: "configMap.appConfig.yaml"
+        notExists: {}

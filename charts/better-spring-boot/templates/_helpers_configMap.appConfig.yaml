@@ -1,3 +1,13 @@
 {{- define "better-spring-boot.appConfigMap.configFileName" -}}
 application-{{- . -}}.yaml
 {{- end }}
+
+{{- define "better-spring-boot.appConfigMap.helmValueProfiles" -}}
+{{- $helmValueProfiles := list}}
+{{- range $profile, $config := .Values.spring.config -}}
+{{- if $config.values }}
+{{- $helmValueProfiles = append $helmValueProfiles $profile }}
+{{- end }}
+{{- end }}
+{{- join "," $helmValueProfiles -}}
+{{- end }}
