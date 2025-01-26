@@ -243,8 +243,22 @@ works with maximal configuration:
                 - mountPath: /app/secret
                   name: app-secret-volume
                   readOnly: true
+            - command:
+                - sh
+                - -c
+                - tail -F /opt/logs.txt
+              image: alpine:latest
+              name: other-container
           imagePullSecrets:
             - name: my-private-registry-secret
+          initContainers:
+            - command:
+                - sh
+                - -c
+                - tail -F /opt/logs.txt
+              image: alpine:latest
+              name: sidecar
+              restartPolicy: Always
           nodeSelector:
             kubernetes.io/os: linux
             node-role.kubernetes.io/app: "true"

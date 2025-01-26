@@ -164,3 +164,15 @@ affinity:
               values:
                 - my-app
         topologyKey: "kubernetes.io/hostname"
+
+deployment:
+  recreatePodStrategy: "values-changed"
+  initContainers:
+    - name: sidecar
+      image: alpine:latest
+      restartPolicy: Always
+      command: ['sh', '-c', 'tail -F /opt/logs.txt']
+  extraContainers:
+    - name: other-container
+      image: alpine:latest
+      command: ['sh', '-c', 'tail -F /opt/logs.txt']
