@@ -6,6 +6,7 @@ tests:
     set:
       image.repository: goatfryed/spring-boot-echo
       spring.profiles.active: "k8s, local, something"
+      deployment.recreatePods.onSpringConfigChanged: false
     asserts:
       - equal:
           path: spec.template.spec.containers[0].env[0]
@@ -16,6 +17,7 @@ tests:
     set:
       image.repository: goatfryed/spring-boot-echo
       spring.profiles.active: [k8s, local, something]
+      deployment.recreatePods.onSpringConfigChanged: false
     asserts:
       - equal:
           path: spec.template.spec.containers[0].env[0]

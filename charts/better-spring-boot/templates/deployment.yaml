@@ -22,6 +22,7 @@ spec:
         {{- with .Values.podLabels }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
+        {{- include "better-spring-boot.deployment.appConfigCheckLabels" . | nindent 8}}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
@@ -82,7 +83,7 @@ spec:
 {{- define "spring.container.env" -}}
   {{- $envVars := dict -}}
   {{- $activeProfiles := include "spring.container.activeProfiles" . -}}
-  {{- $envVars = merge $envVars (dict "SPRING_PROFILES_ACTIVE" $activeProfiles) -}}
+  {{- $envVars = merge $envVars (dict "SPRING_PROFILES_ACTIVE" (default "''" $activeProfiles)) -}}
   {{- range $key, $value := $envVars -}}
 - name: {{ $key }}
   value: {{ $value }}
@@ -94,7 +95,6 @@ spec:
   (include "spring.container.debugProfiles" .)
   | default (include "spring.container.userProfiles" .)
   | default (include "spring.container.defaultProfiles" .)
-  | default "''"
 }}
 {{- end -}}
 

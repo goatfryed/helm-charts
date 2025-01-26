@@ -11,7 +11,7 @@ image:
 
 spring:
   profiles:
-    active: "banana, funk"
+    active: "banana, funk, inspector"
   config:
     profile1:
       values:
@@ -27,6 +27,10 @@ spring:
         name: user-defined-config-map
         key: app.yml
         type: yaml
+    inspector:
+      values:
+        foo: bar
+        bar: foo
 
 imagePullSecrets:
   - name: my-private-registry-secret

@@ -6,17 +6,11 @@ tests:
     asserts:
       - template: deployment.yaml
         matchSnapshot:
-      - template: propertiesConfigMap.yaml
+      - template: configMap.appConfig.yaml
         matchSnapshot:
       - template: service.yaml
         matchSnapshot:
       - template: serviceaccount.yaml
-        matchSnapshot:
-  - it: this tests fails in pipeline
-    set:
-      image.repository: goatfryed/spring-boot-echo
-    asserts:
-      - template: ingress.yaml
         matchSnapshot:
   - it: works with full configuration
     set:

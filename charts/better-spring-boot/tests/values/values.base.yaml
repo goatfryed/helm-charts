@@ -1,2 +1,5 @@
 image:
   repository: goatfryed/spring-boot-echo
+deployment:
+  recreatePods:
+    onSpringConfigChanged: false

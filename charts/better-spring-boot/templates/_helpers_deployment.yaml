@@ -1,0 +1,21 @@
+{{- define "better-spring-boot.deployment.appConfigCheckLabels" -}}
+{{- with ( include "better-spring-boot.deployment.helmAppConfigChecksum" . ) }}
+release/checksum/app-config: {{ . }}
+{{- end }}
+{{- end -}}
+
+{{- define "better-spring-boot.deployment.helmAppConfigChecksum" }}
+  {{- if .Values.deployment.recreatePods.onSpringConfigChanged }}
+    {{- $activeProfiles := include "spring.container.activeProfiles" . }}
+    {{- $activeProfilesList :=  (regexSplit ", ?" $activeProfiles -1) }}
+    {{- $appConfig := include (print $.Template.BasePath "/configMap.appConfig.yaml") . | fromYaml }}
+    {{- if $appConfig.data }}
+      {{- $activeConfig := dict }}
+      {{- range $activeProfile := (sortAlpha $activeProfilesList) -}}
+        {{- $configFileName := include "better-spring-boot.propertiesConfigMap.configFileName" $activeProfile }}
+        {{- $activeConfig := merge $activeConfig (pick $appConfig.data $configFileName) }}
+      {{- end }}
+      {{- $activeConfig | toYaml | sha256sum }}
+    {{- end }}
+  {{- end}}
+{{- end }}
