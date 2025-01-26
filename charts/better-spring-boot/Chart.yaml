@@ -2,7 +2,7 @@ apiVersion: v2
 name: better-spring-boot
 description: Unified deployment of individual spring boot applications
 type: application
-version: 0.2.0
+version: 0.3.0
 appVersion: "3.4.1"
 keywords:
   - java
