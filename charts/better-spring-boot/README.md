@@ -63,10 +63,11 @@ We are terrible sorry to not provide a better documentation at the moment!
 
 ## Easy profile configuration management
 You can configure profile specific application properties under `spring.config.{myProfileName}` from different sources.
-By default, all configured profiles are activated.
+By default, all configured profiles are activated ordered by name.
 
-You can also use  list active profiles explicitly under `spring.profiles.active` to disable some
-or add profiles built into your application.
+You can also use  list active profiles explicitly under `spring.profiles.active` to disable some,
+add profiles built into your application or change the priority.
+Keep in mind that the last listed profile wins on overlapping definitions.
 
 ### define application values directly in your helm value
 The quick and easy way to get started with a service configuration. Define environment configuration directly in your
@@ -137,6 +138,20 @@ debugDeployment:
 ```
 This example assumes that all the mentioned profile configuration was configured
 as explained in the [configuration section](#easy-profile-configuration-management) or built into the application.
+
+## Configuration updates
+Kubernetes doesn't update pods, when your mounted configuration or secrets change.
+By default, a checksum of enabled application configuration defined in helm values is added to your pod.
+This cases your pod to be recreated, when you update the configuration.
+
+Check chart configuration options `deployment.recreatePodStrategy`.
+
+If you mount external configuration, you can add your own label with a change date.
+
+## Advanced configuration
+The included configuration support is aimed at simple to medium requirements.
+For more advanced use cases, consider [spring-cloud-config](https://spring.io/projects/spring-cloud-config)
+
 
 # Contributing
 Looking to contribute? Great! Check out [CONTRIBUTING.md](../../CONTRIBUTING.md)

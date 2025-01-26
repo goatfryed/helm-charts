@@ -1,7 +1,7 @@
 suite: test chart
 templates:
   - deployment.yaml
-  - propertiesConfigMap.yaml
+  - configMap.appConfig.yaml
 tests:
   - it: injects application properties spring-container
     values:
@@ -10,7 +10,7 @@ tests:
       - template: deployment.yaml
         matchSnapshot:
           path: spec.template.spec
-      - template: propertiesConfigMap.yaml
+      - template: configMap.appConfig.yaml
         matchSnapshot: {}
   - it: activates profiles automatically
     values:

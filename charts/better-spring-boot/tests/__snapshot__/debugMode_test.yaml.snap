@@ -5,9 +5,6 @@ adds health checks only if explicitly activated:
           - sh
           - -c
           - trap "exit 0" SIGTERM SIGINT; tail -f /dev/null & wait
-        env:
-          - name: SPRING_PROFILES_ACTIVE
-            value: ""
         image: goatfryed/spring-boot-echo:latest
         imagePullPolicy: IfNotPresent
         livenessProbe:
@@ -33,7 +30,7 @@ adds health checks only if explicitly activated:
     serviceAccountName: RELEASE-NAME-spring-boot
     volumes:
       - configMap:
-          name: RELEASE-NAME-spring-boot-application-properties
+          name: RELEASE-NAME-spring-boot-app-config
         name: helm-application-properties
 overrides profiles:
   1: |
@@ -58,7 +55,7 @@ overrides profiles:
     serviceAccountName: RELEASE-NAME-spring-boot
     volumes:
       - configMap:
-          name: RELEASE-NAME-spring-boot-application-properties
+          name: RELEASE-NAME-spring-boot-app-config
         name: helm-application-properties
 overrides run command:
   1: |
@@ -67,9 +64,6 @@ overrides run command:
           - sh
           - -c
           - trap "exit 0" SIGTERM SIGINT; tail -f /dev/null & wait
-        env:
-          - name: SPRING_PROFILES_ACTIVE
-            value: ""
         image: goatfryed/spring-boot-echo:latest
         imagePullPolicy: IfNotPresent
         name: spring-boot
@@ -87,5 +81,5 @@ overrides run command:
     serviceAccountName: RELEASE-NAME-spring-boot
     volumes:
       - configMap:
-          name: RELEASE-NAME-spring-boot-application-properties
+          name: RELEASE-NAME-spring-boot-app-config
         name: helm-application-properties

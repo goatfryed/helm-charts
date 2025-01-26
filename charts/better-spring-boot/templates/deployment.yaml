@@ -22,6 +22,7 @@ spec:
         {{- with .Values.podLabels }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
+        {{- include "better-spring-boot.deployment.podRecreationStrategy" . | nindent 8}}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
@@ -40,8 +41,10 @@ spec:
           command:
             {{- toYaml .Values.debugDeployment.overrideCommand | nindent 12 }}
           {{- end }}
+          {{- with (include "better-spring-boot.deployment.containerEnv" .) }}
           env:
-            {{- include "spring.container.env" . | nindent 12 }}
+            {{- . | nindent 12 }}
+          {{- end }}
           ports:
             - name: http
               containerPort: {{ .Values.service.port }}
@@ -78,23 +81,11 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
 
-
-{{- define "spring.container.env" -}}
-  {{- $envVars := dict -}}
-  {{- $activeProfiles := include "spring.container.activeProfiles" . -}}
-  {{- $envVars = merge $envVars (dict "SPRING_PROFILES_ACTIVE" $activeProfiles) -}}
-  {{- range $key, $value := $envVars -}}
-- name: {{ $key }}
-  value: {{ $value }}
-  {{- end -}}
-{{- end -}}
-
 {{- define "spring.container.activeProfiles" -}}
 {{
   (include "spring.container.debugProfiles" .)
   | default (include "spring.container.userProfiles" .)
   | default (include "spring.container.defaultProfiles" .)
-  | default "''"
 }}
 {{- end -}}
 

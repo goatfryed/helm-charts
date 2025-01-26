@@ -62,5 +62,5 @@ Create the name of the service account to use
 {{- end }}
 
 {{- define "spring-boot.propertiesConfigMapName" -}}
-{{ include "spring-boot.fullname" . }}-application-properties
+{{ include "spring-boot.fullname" . }}-app-config
 {{- end -}}

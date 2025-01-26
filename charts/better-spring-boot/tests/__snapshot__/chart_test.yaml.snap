@@ -7,6 +7,12 @@ works with full configuration:
         echo "Visit http://127.0.0.1:8080 to use your application"
         kubectl --namespace NAMESPACE port-forward $POD_NAME 8080:$CONTAINER_PORT
   2: |
+    apiVersion: v1
+    data: null
+    kind: ConfigMap
+    metadata:
+      name: RELEASE-NAME-spring-boot-app-config
+  3: |
     apiVersion: apps/v1
     kind: Deployment
     metadata:
@@ -31,10 +37,7 @@ works with full configuration:
             helm.sh/chart: better-spring-boot-0.2.0
         spec:
           containers:
-            - env:
-                - name: SPRING_PROFILES_ACTIVE
-                  value: ""
-              image: goatfryed/spring-boot-echo:latest
+            - image: goatfryed/spring-boot-echo:latest
               imagePullPolicy: IfNotPresent
               livenessProbe:
                 httpGet:
@@ -59,14 +62,8 @@ works with full configuration:
           serviceAccountName: RELEASE-NAME-spring-boot
           volumes:
             - configMap:
-                name: RELEASE-NAME-spring-boot-application-properties
+                name: RELEASE-NAME-spring-boot-app-config
               name: helm-application-properties
-  3: |
-    apiVersion: v1
-    data: null
-    kind: ConfigMap
-    metadata:
-      name: RELEASE-NAME-spring-boot-application-properties
   4: |
     apiVersion: v1
     kind: Service
@@ -125,6 +122,18 @@ works with maximal configuration:
       1. Get the application URL by running these commands:
         https://example.com/
   2: |
+    apiVersion: v1
+    data:
+      application-inspector.yaml: |
+        bar: foo
+        foo: bar
+      application-profile1.yaml: |
+        server:
+          port: 8080
+    kind: ConfigMap
+    metadata:
+      name: my-app-fullname-app-config
+  3: |
     apiVersion: apps/v1
     kind: Deployment
     metadata:
@@ -151,6 +160,7 @@ works with maximal configuration:
             app.kubernetes.io/name: my-app
             environment: production
             helm.sh/chart: better-spring-boot-0.2.0
+            release/checksum-app-config: dbec081857f377834069f5f2aafae2fbbb17426ccfa5a4f36966b6047ffa6374
         spec:
           affinity:
             nodeAffinity:
@@ -177,7 +187,7 @@ works with maximal configuration:
           containers:
             - env:
                 - name: SPRING_PROFILES_ACTIVE
-                  value: banana, funk
+                  value: banana, funk, inspector
               image: user-registry/user-repo:user-tag
               imagePullPolicy: Always
               livenessProbe:
@@ -247,7 +257,7 @@ works with maximal configuration:
               operator: Exists
           volumes:
             - configMap:
-                name: my-app-fullname-application-properties
+                name: my-app-fullname-app-config
               name: helm-application-properties
             - configMap:
                 name: user-defined-config-map
@@ -262,7 +272,7 @@ works with maximal configuration:
               secret:
                 optional: false
                 secretName: app-secret
-  3: |
+  4: |
     apiVersion: autoscaling/v2
     kind: HorizontalPodAutoscaler
     metadata:
@@ -286,7 +296,7 @@ works with maximal configuration:
         apiVersion: apps/v1
         kind: Deployment
         name: my-app-fullname
-  4: |
+  5: |
     apiVersion: networking.k8s.io/v1
     kind: Ingress
     metadata:
@@ -316,15 +326,6 @@ works with maximal configuration:
         - hosts:
             - example.com
           secretName: example-com-tls
-  5: |
-    apiVersion: v1
-    data:
-      application-profile1.yaml: |-
-        server:
-          port: 8080
-    kind: ConfigMap
-    metadata:
-      name: my-app-fullname-application-properties
   6: |
     apiVersion: v1
     kind: Service
@@ -405,10 +406,7 @@ works with minimal configuration (pipeline-safe):
             helm.sh/chart: better-spring-boot-0.2.0
         spec:
           containers:
-            - env:
-                - name: SPRING_PROFILES_ACTIVE
-                  value: ""
-              image: goatfryed/spring-boot-echo:latest
+            - image: goatfryed/spring-boot-echo:latest
               imagePullPolicy: IfNotPresent
               livenessProbe:
                 httpGet:
@@ -433,14 +431,14 @@ works with minimal configuration (pipeline-safe):
           serviceAccountName: RELEASE-NAME-spring-boot
           volumes:
             - configMap:
-                name: RELEASE-NAME-spring-boot-application-properties
+                name: RELEASE-NAME-spring-boot-app-config
               name: helm-application-properties
   2: |
     apiVersion: v1
     data: null
     kind: ConfigMap
     metadata:
-      name: RELEASE-NAME-spring-boot-application-properties
+      name: RELEASE-NAME-spring-boot-app-config
   3: |
     apiVersion: v1
     kind: Service

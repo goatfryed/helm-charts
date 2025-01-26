@@ -1,2 +1,4 @@
 image:
   repository: goatfryed/spring-boot-echo
+deployment:
+  recreatePodStrategy: false

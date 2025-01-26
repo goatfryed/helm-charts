@@ -1,0 +1,3 @@
+{{- define "better-spring-boot.propertiesConfigMap.configFileName" -}}
+application-{{- . -}}.yaml
+{{- end }}

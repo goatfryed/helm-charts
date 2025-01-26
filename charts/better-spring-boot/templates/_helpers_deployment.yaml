@@ -1,0 +1,41 @@
+{{- define "better-spring-boot.deployment.podRecreationStrategy" -}}
+{{- $strategy := default "never" .Values.deployment.recreatePodStrategy }}
+{{- if eq $strategy "values-changed" }}
+{{- with ( include "better-spring-boot.deployment.helmAppConfigChecksum" . ) }}
+release/checksum-app-config: {{ . }}
+{{- end }}
+{{- else if eq $strategy "always" }}
+release/roll-me: {{ print .Release.Revision "-" (randAlphaNum 5) | quote }}
+{{- end }}
+{{- end }}
+
+{{- define "better-spring-boot.deployment.helmAppConfigChecksum" }}
+  {{- $activeProfiles := include "spring.container.activeProfiles" . }}
+  {{- $activeProfilesList :=  (regexSplit ", ?" $activeProfiles -1) }}
+  {{- $appConfig := include (print $.Template.BasePath "/configMap.appConfig.yaml") . | fromYaml }}
+  {{- if $appConfig.data }}
+    {{- $activeConfig := dict }}
+    {{- range $activeProfile := (sortAlpha $activeProfilesList) -}}
+      {{- $configFileName := include "better-spring-boot.propertiesConfigMap.configFileName" $activeProfile }}
+      {{- $activeConfig := merge $activeConfig (pick $appConfig.data $configFileName) }}
+    {{- end }}
+    {{- $activeConfig | toYaml | sha256sum }}
+  {{- end }}
+{{- end }}
+
+
+{{- define "better-spring-boot.deployment.containerEnv" }}
+  {{- $envVars := .Values.spring.environmentVariable }}
+  {{- $envVars = omit $envVars "SPRING_PROFILES_ACTIVE" "SPRING_CONFIG_LOCATION" }}
+  {{- range $key, $value := $envVars }}
+  {{- if ne $value nil }}
+- name: {{ $key }}
+  value: {{ default "''" $value }}
+  {{- end }}
+  {{- end }}
+  {{- $activeProfiles := include "spring.container.activeProfiles" . }}
+  {{- with $activeProfiles }}
+- name: SPRING_PROFILES_ACTIVE
+  value: {{ default "''" $activeProfiles }}
+  {{- end }}
+{{- end }}

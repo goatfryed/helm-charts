@@ -42,6 +42,11 @@ spring:
 #        key: "application.yaml"
 #        # file type and extension
 #        type: "yaml"
+  environmentVariable:
+    JAVA_OPTS: ~
+    # provided as map of strings or null
+    # note that null omits the variable, but empty string is forwarded and would unset it, if the image set it
+    # ENV_VAR_NAME: environment variable value
 
 imagePullSecrets: []
 nameOverride: ""
@@ -155,3 +160,15 @@ debugDeployment:
   # if you don't boot your applications, healthChecks can't work.
   # But you might also want to disable them running in debug profiles
   healthChecksEnabled: false
+
+# Additional deployment rules
+deployment:
+  # Settings that add labels to improve when the application pod is recreated and therefore restarted
+  # For more advanced use cases, consider adding a self-managed label to podLabels.
+  # supported strategies:
+  # "values-changed": the spring pod is recreated, if active spring configuration is changed, based on best effort basis
+  # this only applies to changes in spring.config.{profiles}.values. Reference changes can't be detected by helm.
+  # this is filtered to profiles that are enabled
+  # "always": on every helm release, pod recreation is forced
+  # others or null to disable
+  recreatePodStrategy: "values-changed"
