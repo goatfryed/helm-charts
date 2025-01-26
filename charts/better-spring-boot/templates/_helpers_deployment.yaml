@@ -1,23 +1,26 @@
-{{- define "better-spring-boot.deployment.appConfigCheckLabels" -}}
+{{- define "better-spring-boot.deployment.podRecreationStrategy" -}}
+{{- $strategy := default "never" .Values.deployment.recreatePodStrategy }}
+{{- if eq $strategy "values-changed" }}
 {{- with ( include "better-spring-boot.deployment.helmAppConfigChecksum" . ) }}
-release/checksum/app-config: {{ . }}
+release/checksum-app-config: {{ . }}
 {{- end }}
-{{- end -}}
+{{- else if eq $strategy "always" }}
+release/roll-me: {{ print .Release.Revision "-" (randAlphaNum 5) | quote }}
+{{- end }}
+{{- end }}
 
 {{- define "better-spring-boot.deployment.helmAppConfigChecksum" }}
-  {{- if .Values.deployment.recreatePods.onSpringConfigChanged }}
-    {{- $activeProfiles := include "spring.container.activeProfiles" . }}
-    {{- $activeProfilesList :=  (regexSplit ", ?" $activeProfiles -1) }}
-    {{- $appConfig := include (print $.Template.BasePath "/configMap.appConfig.yaml") . | fromYaml }}
-    {{- if $appConfig.data }}
-      {{- $activeConfig := dict }}
-      {{- range $activeProfile := (sortAlpha $activeProfilesList) -}}
-        {{- $configFileName := include "better-spring-boot.propertiesConfigMap.configFileName" $activeProfile }}
-        {{- $activeConfig := merge $activeConfig (pick $appConfig.data $configFileName) }}
-      {{- end }}
-      {{- $activeConfig | toYaml | sha256sum }}
+  {{- $activeProfiles := include "spring.container.activeProfiles" . }}
+  {{- $activeProfilesList :=  (regexSplit ", ?" $activeProfiles -1) }}
+  {{- $appConfig := include (print $.Template.BasePath "/configMap.appConfig.yaml") . | fromYaml }}
+  {{- if $appConfig.data }}
+    {{- $activeConfig := dict }}
+    {{- range $activeProfile := (sortAlpha $activeProfilesList) -}}
+      {{- $configFileName := include "better-spring-boot.propertiesConfigMap.configFileName" $activeProfile }}
+      {{- $activeConfig := merge $activeConfig (pick $appConfig.data $configFileName) }}
     {{- end }}
-  {{- end}}
+    {{- $activeConfig | toYaml | sha256sum }}
+  {{- end }}
 {{- end }}
 
 

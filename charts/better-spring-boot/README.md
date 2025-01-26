@@ -144,7 +144,7 @@ Kubernetes doesn't update pods, when your mounted configuration or secrets chang
 By default, a checksum of enabled application configuration defined in helm values is added to your pod.
 This cases your pod to be recreated, when you update the configuration.
 
-Check chart configuration options `deployment.recreatePods`.
+Check chart configuration options `deployment.recreatePodStrategy`.
 
 If you mount external configuration, you can add your own label with a change date.
 

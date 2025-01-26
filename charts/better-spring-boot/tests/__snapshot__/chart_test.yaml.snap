@@ -37,10 +37,7 @@ works with full configuration:
             helm.sh/chart: better-spring-boot-0.2.0
         spec:
           containers:
-            - env:
-                - name: SPRING_PROFILES_ACTIVE
-                  value: ""
-              image: goatfryed/spring-boot-echo:latest
+            - image: goatfryed/spring-boot-echo:latest
               imagePullPolicy: IfNotPresent
               livenessProbe:
                 httpGet:
@@ -163,7 +160,7 @@ works with maximal configuration:
             app.kubernetes.io/name: my-app
             environment: production
             helm.sh/chart: better-spring-boot-0.2.0
-            release/checksum/app-config: dbec081857f377834069f5f2aafae2fbbb17426ccfa5a4f36966b6047ffa6374
+            release/checksum-app-config: dbec081857f377834069f5f2aafae2fbbb17426ccfa5a4f36966b6047ffa6374
         spec:
           affinity:
             nodeAffinity:
@@ -409,10 +406,7 @@ works with minimal configuration (pipeline-safe):
             helm.sh/chart: better-spring-boot-0.2.0
         spec:
           containers:
-            - env:
-                - name: SPRING_PROFILES_ACTIVE
-                  value: ""
-              image: goatfryed/spring-boot-echo:latest
+            - image: goatfryed/spring-boot-echo:latest
               imagePullPolicy: IfNotPresent
               livenessProbe:
                 httpGet:

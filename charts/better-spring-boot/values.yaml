@@ -163,10 +163,12 @@ debugDeployment:
 
 # Additional deployment rules
 deployment:
-  # Settings that add labels to improve how application is recreated and therefore restarted
+  # Settings that add labels to improve when the application pod is recreated and therefore restarted
   # For more advanced use cases, consider adding a self-managed label to podLabels.
-  recreatePods:
-    # if enabled, the spring pod is recreated, if active spring configuration is changed, based on best effort basis
-    # this only applies to changes in spring.config.{profiles}.values. Reference changes can't be detected by helm.
-    # this is filtered to profiles that are enabled
-    onSpringConfigChanged: true
+  # supported strategies:
+  # "values-changed": the spring pod is recreated, if active spring configuration is changed, based on best effort basis
+  # this only applies to changes in spring.config.{profiles}.values. Reference changes can't be detected by helm.
+  # this is filtered to profiles that are enabled
+  # "always": on every helm release, pod recreation is forced
+  # others or null to disable
+  recreatePodStrategy: "values-changed"

@@ -7,7 +7,7 @@ tests:
     set:
       image.repository: goatfryed/spring-boot-echo
       spring.profiles.active: "k8s, local, something"
-      deployment.recreatePods.onSpringConfigChanged: false
+      deployment.recreatePodStrategy: false
     asserts:
       - template: deployment.yaml
         equal:
@@ -19,7 +19,7 @@ tests:
     set:
       image.repository: goatfryed/spring-boot-echo
       spring.profiles.active: [k8s, local, something]
-      deployment.recreatePods.onSpringConfigChanged: false
+      deployment.recreatePodStrategy: false
     asserts:
       - template: deployment.yaml
         equal:
@@ -40,7 +40,7 @@ tests:
     asserts:
       - template: deployment.yaml
         equal:
-          path: spec.template.metadata.labels.release/checksum/app-config
+          path: spec.template.metadata.labels.release/checksum-app-config
           value: 3d9a1b9ff8249efd74f1fd196e6e4f5bf7d51fc4dcfb855844b380ce9e311c31
   - it: calculates checksum over app config with stable sort
     set:
@@ -59,7 +59,7 @@ tests:
     asserts:
       - template: deployment.yaml
         equal:
-          path: spec.template.metadata.labels.release/checksum/app-config
+          path: spec.template.metadata.labels.release/checksum-app-config
           value: 3d9a1b9ff8249efd74f1fd196e6e4f5bf7d51fc4dcfb855844b380ce9e311c31
   - it: calculates checksum over active app config
     set:
@@ -80,7 +80,7 @@ tests:
     asserts:
       - template: deployment.yaml
         equal:
-          path: spec.template.metadata.labels.release/checksum/app-config
+          path: spec.template.metadata.labels.release/checksum-app-config
           value: 3d9a1b9ff8249efd74f1fd196e6e4f5bf7d51fc4dcfb855844b380ce9e311c31
   - it: supports environment variables
     set:
@@ -111,4 +111,40 @@ tests:
       - template: deployment.yaml
         notExists:
           path: spec.template.spec.containers[0].env
+  - it: adds random label on podRecreationStrategy always
+    set:
+      image.repository: goatfryed/spring-boot-echo
+      deployment.recreatePodStrategy: always
+    asserts:
+      - template: deployment.yaml
+        matchRegex:
+          path: spec.template.metadata.labels.release/roll-me
+          pattern: "^0-"
+      - template: deployment.yaml
+        notExists:
+          path: spec.template.metadata.labels.release/checksum-app-config
+  - it: adds config checksum label on podRecreationStrategy values-changed
+    set:
+      image.repository: goatfryed/spring-boot-echo
+      deployment.recreatePodStrategy: values-changed
+      spring.config.profile.values.foo: bar
+    asserts:
+      - template: deployment.yaml
+        equal:
+          path: spec.template.metadata.labels.release/checksum-app-config
+          value: "d1794afd122dc6ec277a8994dfe58317e4426c4b31e7b1c4b4a906825a0521d7"
+      - template: deployment.yaml
+        notExists:
+          path: spec.template.metadata.labels.release/roll-me
+  - it: allows disable of recreation labels
+    set:
+      image.repository: goatfryed/spring-boot-echo
+      deployment.recreatePodStrategy: ~
+    asserts:
+      - template: deployment.yaml
+        notExists:
+          path: spec.template.metadata.labels.release/checksum-app-config
+      - template: deployment.yaml
+        notExists:
+          path: spec.template.metadata.labels.release/roll-me
 
