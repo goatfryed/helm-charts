@@ -13,16 +13,16 @@ spec:
       {{- include "better-spring-boot.selectorLabels" . | nindent 6 }}
   template:
     metadata:
-      {{- with .Values.podAnnotations }}
       annotations:
+      {{- with .Values.podAnnotations }}
         {{- toYaml . | nindent 8 }}
       {{- end }}
+        {{- include "better-spring-boot.deployment.podRecreationStrategy" . | nindent 8 }}
       labels:
         {{- include "better-spring-boot.labels" . | nindent 8 }}
         {{- with .Values.podLabels }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
-        {{- include "better-spring-boot.deployment.podRecreationStrategy" . | nindent 8}}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:

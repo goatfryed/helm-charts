@@ -31,6 +31,8 @@ overrides profiles:
   1: |
     containers:
       - env:
+          - name: SPRING_CONFIG_ADDITIONAL_LOCATION
+            value: optional:/app/config/*/
           - name: SPRING_PROFILES_ACTIVE
             value: debug, profile2
         image: goatfryed/spring-boot-echo:latest
