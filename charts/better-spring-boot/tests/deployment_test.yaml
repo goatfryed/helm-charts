@@ -41,7 +41,7 @@ tests:
       - template: deployment.yaml
         equal:
           path: spec.template.metadata.labels.release/checksum-app-config
-          value: 3d9a1b9ff8249efd74f1fd196e6e4f5bf7d51fc4dcfb855844b380ce9e311c31
+          value: ee5143893af613611dd5c59559e249c5612e2f11
   - it: calculates checksum over app config with stable sort
     set:
       image:
@@ -60,7 +60,7 @@ tests:
       - template: deployment.yaml
         equal:
           path: spec.template.metadata.labels.release/checksum-app-config
-          value: 3d9a1b9ff8249efd74f1fd196e6e4f5bf7d51fc4dcfb855844b380ce9e311c31
+          value: ee5143893af613611dd5c59559e249c5612e2f11
   - it: calculates checksum over active app config
     set:
       image.repository: goatfryed/spring-boot-echo
@@ -81,7 +81,7 @@ tests:
       - template: deployment.yaml
         equal:
           path: spec.template.metadata.labels.release/checksum-app-config
-          value: 3d9a1b9ff8249efd74f1fd196e6e4f5bf7d51fc4dcfb855844b380ce9e311c31
+          value: ee5143893af613611dd5c59559e249c5612e2f11
   - it: supports environment variables
     set:
       image.repository: goatfryed/spring-boot-echo
@@ -101,16 +101,23 @@ tests:
               value: BAR
             - name: MUTE
               value: ""
+            - name: SPRING_CONFIG_ADDITIONAL_LOCATION
+              value: optional:/app/config/*/
+
   - it: omits managed environment variables
     set:
       image.repository: goatfryed/spring-boot-echo
       spring.environmentVariable:
         SPRING_PROFILES_ACTIVE: test
-        SPRING_CONFIG_LOCATION: /other/path
+        SPRING_CONFIG_ADDITIONAL_LOCATION: /other/path
     asserts:
       - template: deployment.yaml
+        equal:
+          path: spec.template.spec.containers[0].env[0].value
+          value: optional:/app/config/*/
+      - template: deployment.yaml
         notExists:
-          path: spec.template.spec.containers[0].env
+          path: spec.template.spec.containers[0].env[1]
   - it: adds random label on podRecreationStrategy always
     set:
       image.repository: goatfryed/spring-boot-echo
@@ -132,7 +139,7 @@ tests:
       - template: deployment.yaml
         equal:
           path: spec.template.metadata.labels.release/checksum-app-config
-          value: "d1794afd122dc6ec277a8994dfe58317e4426c4b31e7b1c4b4a906825a0521d7"
+          value: dfe9918a99471ea982fc5adb3682971a9697a231
       - template: deployment.yaml
         notExists:
           path: spec.template.metadata.labels.release/roll-me

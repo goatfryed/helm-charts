@@ -23,7 +23,7 @@ works with maximal configuration:
         app.kubernetes.io/instance: RELEASE-NAME
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: my-app
-        helm.sh/chart: better-spring-boot-0.3.0
+        helm.sh/chart: better-spring-boot-0.4.0
       name: my-app-fullname
     spec:
       selector:
@@ -41,8 +41,8 @@ works with maximal configuration:
             app.kubernetes.io/managed-by: Helm
             app.kubernetes.io/name: my-app
             environment: production
-            helm.sh/chart: better-spring-boot-0.3.0
-            release/checksum-app-config: dbec081857f377834069f5f2aafae2fbbb17426ccfa5a4f36966b6047ffa6374
+            helm.sh/chart: better-spring-boot-0.4.0
+            release/checksum-app-config: 300e4662d88c950df02cfd125ab0526875ab5207
         spec:
           affinity:
             nodeAffinity:
@@ -70,6 +70,8 @@ works with maximal configuration:
             - env:
                 - name: SPRING_PROFILES_ACTIVE
                   value: banana, funk, inspector
+                - name: SPRING_CONFIG_ADDITIONAL_LOCATION
+                  value: optional:/app/config/*/
               image: user-registry/user-repo:user-tag
               imagePullPolicy: Always
               livenessProbe:
@@ -181,7 +183,7 @@ works with maximal configuration:
         app.kubernetes.io/instance: RELEASE-NAME
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: my-app
-        helm.sh/chart: better-spring-boot-0.3.0
+        helm.sh/chart: better-spring-boot-0.4.0
       name: my-app-fullname
     spec:
       maxReplicas: 10
@@ -208,7 +210,7 @@ works with maximal configuration:
         app.kubernetes.io/instance: RELEASE-NAME
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: my-app
-        helm.sh/chart: better-spring-boot-0.3.0
+        helm.sh/chart: better-spring-boot-0.4.0
       name: my-app-fullname
     spec:
       ingressClassName: nginx
@@ -235,7 +237,7 @@ works with maximal configuration:
         app.kubernetes.io/instance: RELEASE-NAME
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: my-app
-        helm.sh/chart: better-spring-boot-0.3.0
+        helm.sh/chart: better-spring-boot-0.4.0
       name: my-app-fullname
     spec:
       ports:
@@ -258,7 +260,7 @@ works with maximal configuration:
         app.kubernetes.io/instance: RELEASE-NAME
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: my-app
-        helm.sh/chart: better-spring-boot-0.3.0
+        helm.sh/chart: better-spring-boot-0.4.0
       name: my-service-account
   8: |
     apiVersion: v1
@@ -270,7 +272,7 @@ works with maximal configuration:
         app.kubernetes.io/instance: RELEASE-NAME
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: my-app
-        helm.sh/chart: better-spring-boot-0.3.0
+        helm.sh/chart: better-spring-boot-0.4.0
       name: my-app-fullname-test-connection
     spec:
       containers:
@@ -297,7 +299,7 @@ works with minimal configuration:
         app.kubernetes.io/instance: RELEASE-NAME
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: spring-boot
-        helm.sh/chart: better-spring-boot-0.3.0
+        helm.sh/chart: better-spring-boot-0.4.0
       name: RELEASE-NAME-spring-boot
     spec:
       replicas: 1
@@ -311,10 +313,13 @@ works with minimal configuration:
             app.kubernetes.io/instance: RELEASE-NAME
             app.kubernetes.io/managed-by: Helm
             app.kubernetes.io/name: spring-boot
-            helm.sh/chart: better-spring-boot-0.3.0
+            helm.sh/chart: better-spring-boot-0.4.0
         spec:
           containers:
-            - image: goatfryed/spring-boot-echo:latest
+            - env:
+                - name: SPRING_CONFIG_ADDITIONAL_LOCATION
+                  value: optional:/app/config/*/
+              image: goatfryed/spring-boot-echo:latest
               imagePullPolicy: IfNotPresent
               livenessProbe:
                 failureThreshold: 12
@@ -364,7 +369,7 @@ works with minimal configuration:
         app.kubernetes.io/instance: RELEASE-NAME
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: spring-boot
-        helm.sh/chart: better-spring-boot-0.3.0
+        helm.sh/chart: better-spring-boot-0.4.0
       name: RELEASE-NAME-spring-boot
     spec:
       ports:
@@ -385,7 +390,7 @@ works with minimal configuration:
         app.kubernetes.io/instance: RELEASE-NAME
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: spring-boot
-        helm.sh/chart: better-spring-boot-0.3.0
+        helm.sh/chart: better-spring-boot-0.4.0
       name: RELEASE-NAME-spring-boot
   5: |
     apiVersion: v1
@@ -397,7 +402,7 @@ works with minimal configuration:
         app.kubernetes.io/instance: RELEASE-NAME
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: spring-boot
-        helm.sh/chart: better-spring-boot-0.3.0
+        helm.sh/chart: better-spring-boot-0.4.0
       name: RELEASE-NAME-spring-boot-test-connection
     spec:
       containers:

@@ -19,10 +19,10 @@ spec:
       {{- end }}
       labels:
         {{- include "better-spring-boot.labels" . | nindent 8 }}
+        {{- include "better-spring-boot.deployment.podRecreationStrategy" . | nindent 8 }}
         {{- with .Values.podLabels }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
-        {{- include "better-spring-boot.deployment.podRecreationStrategy" . | nindent 8}}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
