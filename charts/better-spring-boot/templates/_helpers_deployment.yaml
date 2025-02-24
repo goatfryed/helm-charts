@@ -26,7 +26,7 @@ release/roll-me: {{ print .Release.Revision "-" (randAlphaNum 5) | quote }}
 
 {{- define "better-spring-boot.deployment.containerEnv" }}
   {{- $envVars := .Values.spring.environmentVariable }}
-  {{- $envVars = omit $envVars "SPRING_PROFILES_ACTIVE" "SPRING_CONFIG_LOCATION" }}
+  {{- $envVars = omit $envVars "SPRING_PROFILES_ACTIVE" "SPRING_CONFIG_ADDITIONAL_LOCATION" }}
   {{- range $key, $value := $envVars }}
   {{- if ne $value nil }}
 - name: {{ $key }}
@@ -35,6 +35,8 @@ release/roll-me: {{ print .Release.Revision "-" (randAlphaNum 5) | quote }}
   {{- end }}
   {{- $activeProfiles := include "better-spring-boot.deploymentactiveProfiles" . }}
   {{- with $activeProfiles }}
+- name: SPRING_CONFIG_ADDITIONAL_LOCATION
+  value: optional:/app/config/*/
 - name: SPRING_PROFILES_ACTIVE
   value: {{ default "''" $activeProfiles }}
   {{- end }}

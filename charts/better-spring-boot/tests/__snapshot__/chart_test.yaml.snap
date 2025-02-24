@@ -35,6 +35,7 @@ works with maximal configuration:
           annotations:
             prometheus.io/port: "8080"
             prometheus.io/scrape: "true"
+            release/checksum-app-config: dbec081857f377834069f5f2aafae2fbbb17426ccfa5a4f36966b6047ffa6374
           labels:
             app.kubernetes.io/component: web
             app.kubernetes.io/instance: RELEASE-NAME
@@ -42,7 +43,6 @@ works with maximal configuration:
             app.kubernetes.io/name: my-app
             environment: production
             helm.sh/chart: better-spring-boot-0.3.0
-            release/checksum-app-config: dbec081857f377834069f5f2aafae2fbbb17426ccfa5a4f36966b6047ffa6374
         spec:
           affinity:
             nodeAffinity:
@@ -68,6 +68,8 @@ works with maximal configuration:
                   topologyKey: kubernetes.io/hostname
           containers:
             - env:
+                - name: SPRING_CONFIG_ADDITIONAL_LOCATION
+                  value: optional:/app/config/*/
                 - name: SPRING_PROFILES_ACTIVE
                   value: banana, funk, inspector
               image: user-registry/user-repo:user-tag
@@ -307,6 +309,7 @@ works with minimal configuration:
           app.kubernetes.io/name: spring-boot
       template:
         metadata:
+          annotations: null
           labels:
             app.kubernetes.io/instance: RELEASE-NAME
             app.kubernetes.io/managed-by: Helm
