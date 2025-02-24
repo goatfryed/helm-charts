@@ -2,10 +2,10 @@ injects application properties spring-container:
   1: |
     containers:
       - env:
-          - name: SPRING_CONFIG_ADDITIONAL_LOCATION
-            value: optional:/app/config/*/
           - name: SPRING_PROFILES_ACTIVE
             value: profile1, profile2, profile3, profile4
+          - name: SPRING_CONFIG_ADDITIONAL_LOCATION
+            value: optional:/app/config/*/
         image: goatfryed/spring-boot-echo:latest
         imagePullPolicy: IfNotPresent
         name: spring-boot
@@ -60,10 +60,10 @@ mounts configuration values:
   1: |
     containers:
       - env:
-          - name: SPRING_CONFIG_ADDITIONAL_LOCATION
-            value: optional:/app/config/*/
           - name: SPRING_PROFILES_ACTIVE
             value: userConfig
+          - name: SPRING_CONFIG_ADDITIONAL_LOCATION
+            value: optional:/app/config/*/
         image: goatfryed/spring-boot-echo:latest
         imagePullPolicy: IfNotPresent
         name: spring-boot
@@ -90,10 +90,10 @@ mounts referenced configMaps:
   1: |
     containers:
       - env:
-          - name: SPRING_CONFIG_ADDITIONAL_LOCATION
-            value: optional:/app/config/*/
           - name: SPRING_PROFILES_ACTIVE
             value: userConfig
+          - name: SPRING_CONFIG_ADDITIONAL_LOCATION
+            value: optional:/app/config/*/
         image: goatfryed/spring-boot-echo:latest
         imagePullPolicy: IfNotPresent
         name: spring-boot
@@ -127,10 +127,10 @@ mounts referenced secrets:
   1: |
     containers:
       - env:
-          - name: SPRING_CONFIG_ADDITIONAL_LOCATION
-            value: optional:/app/config/*/
           - name: SPRING_PROFILES_ACTIVE
             value: userConfig
+          - name: SPRING_CONFIG_ADDITIONAL_LOCATION
+            value: optional:/app/config/*/
         image: goatfryed/spring-boot-echo:latest
         imagePullPolicy: IfNotPresent
         name: spring-boot

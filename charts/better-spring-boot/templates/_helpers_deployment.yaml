@@ -19,7 +19,7 @@ release/roll-me: {{ print .Release.Revision "-" (randAlphaNum 5) | quote }}
       {{- $configFileName := include "better-spring-boot.appConfigMap.configFileName" $activeProfile }}
       {{- $activeConfig := merge $activeConfig (pick $appConfig.data $configFileName) }}
     {{- end }}
-    {{- $activeConfig | toYaml | sha256sum }}
+    {{- $activeConfig | toYaml | sha1sum }}
   {{- end }}
 {{- end }}
 
@@ -35,11 +35,11 @@ release/roll-me: {{ print .Release.Revision "-" (randAlphaNum 5) | quote }}
   {{- end }}
   {{- $activeProfiles := include "better-spring-boot.deploymentactiveProfiles" . }}
   {{- with $activeProfiles }}
-- name: SPRING_CONFIG_ADDITIONAL_LOCATION
-  value: optional:/app/config/*/
 - name: SPRING_PROFILES_ACTIVE
   value: {{ default "''" $activeProfiles }}
   {{- end }}
+- name: SPRING_CONFIG_ADDITIONAL_LOCATION
+  value: optional:/app/config/*/
 {{- end }}
 
 
