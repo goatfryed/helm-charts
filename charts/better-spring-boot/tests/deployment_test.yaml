@@ -207,6 +207,18 @@ templates:
   - deployment.yaml
   - configMap.appConfig.yaml
 tests:
+  - it: sets spring application name to user provided name
+    set:
+      spring.applicationName: myAwesomeApp
+    values:
+      - "values/values.base.yaml"
+    asserts:
+      - template: deployment.yaml
+        contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: SPRING_APPLICATION_NAME
+            value: myAwesomeApp
   - it: sets spring application name to release name by default
     values:
       - "values/values.base.yaml"
@@ -217,7 +229,7 @@ tests:
           content:
             name: SPRING_APPLICATION_NAME
             value: RELEASE-NAME
-  - it: follows full name override
+  - it: follows full name override by default
     values:
       - "values/values.base.yaml"
     set:
