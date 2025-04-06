@@ -12,6 +12,8 @@ adds health checks only if explicitly activated:
             value: optional:/app/config/*/
           - name: SERVER_PORT
             value: "8080"
+          - name: MANAGEMENT_SERVER_PORT
+            value: "8080"
         image: goatfryed/spring-boot-echo:latest
         imagePullPolicy: IfNotPresent
         name: spring-boot
@@ -45,6 +47,8 @@ overrides profiles:
           - name: SPRING_CONFIG_ADDITIONAL_LOCATION
             value: optional:/app/config/*/
           - name: SERVER_PORT
+            value: "8080"
+          - name: MANAGEMENT_SERVER_PORT
             value: "8080"
         image: goatfryed/spring-boot-echo:latest
         imagePullPolicy: IfNotPresent
@@ -81,6 +85,8 @@ overrides run command:
           - name: SPRING_CONFIG_ADDITIONAL_LOCATION
             value: optional:/app/config/*/
           - name: SERVER_PORT
+            value: "8080"
+          - name: MANAGEMENT_SERVER_PORT
             value: "8080"
         image: goatfryed/spring-boot-echo:latest
         imagePullPolicy: IfNotPresent

@@ -30,10 +30,11 @@ release/roll-me: {{ print .Release.Revision "-" (randAlphaNum 5) | quote }}
 {{- define "better-spring-boot.deployment.containerEnv" }}
   {{- $envVars := .Values.spring.environmentVariable }}
   {{- $envVars = omit $envVars
-        "SPRING_PROFILES_ACTIVE"
-        "SPRING_CONFIG_ADDITIONAL_LOCATION"
-        "SPRING_APPLICATION_NAME"
+        "MANAGEMENT_SERVER_PORT"
         "SERVER_PORT"
+        "SPRING_APPLICATION_NAME"
+        "SPRING_CONFIG_ADDITIONAL_LOCATION"
+        "SPRING_PROFILES_ACTIVE"
   }}
   {{- range $key, $value := $envVars }}
   {{- if ne $value nil }}
@@ -53,10 +54,18 @@ release/roll-me: {{ print .Release.Revision "-" (randAlphaNum 5) | quote }}
 - name: SPRING_CONFIG_ADDITIONAL_LOCATION
   value: optional:/app/config/*/
 - name: SERVER_PORT
-  value: {{ .Values.spring.serverPort | default .Values.service.port | toString | toJson }}
+  value: {{ include "better-spring-boot.deployment.applicationServerPort" . | toString | toJson }}
+- name: MANAGEMENT_SERVER_PORT
+  value: {{ include "better-spring-boot.deployment.managementServerPort" . | toString | toJson }}
 {{- end }}
 
+{{- define "better-spring-boot.deployment.applicationServerPort" }}
+{{- .Values.spring.serverPort | default .Values.service.port }}
+{{- end }}
 
+{{- define "better-spring-boot.deployment.managementServerPort" }}
+{{- .Values.spring.managementPort | default (include "better-spring-boot.deployment.applicationServerPort" .) }}
+{{- end }}
 
 {{- define "better-spring-boot.deployment.appHealthChecks" }}
 {{- if and .Values.debugDeployment.enabled (not .Values.debugDeployment.healthChecksEnabled) }}

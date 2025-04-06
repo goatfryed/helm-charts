@@ -66,6 +66,7 @@ The following spring configuration is manged by the helm chart.
 
 | Spring boot                      | Chart                                                        |
 |----------------------------------|--------------------------------------------------------------|
+| management.server.port           | spring.managementPort                                        |
 | server.port                      | spring.serverPort                                            |
 | spring.application.name          | spring.applicationName                                       |
 | spring.profiles.active           | [profile management](#easy-profile-configuration-management) |

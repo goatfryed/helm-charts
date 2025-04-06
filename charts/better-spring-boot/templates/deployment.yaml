@@ -47,10 +47,10 @@ spec:
           {{- end }}
           ports:
             - name: http
-              containerPort: {{ .Values.spring.serverPort | default .Values.service.port }}
+              containerPort: {{ include "better-spring-boot.deployment.applicationServerPort" . }}
               protocol: TCP
             - name: http-management
-              containerPort: {{ .Values.spring.managementPort | default .Values.spring.serverPort | default .Values.service.port }}
+              containerPort: {{ include "better-spring-boot.deployment.managementServerPort" . }}
               protocol: TCP
           {{- include "better-spring-boot.deployment.appHealthChecks" . | nindent 10 }}
           resources:
