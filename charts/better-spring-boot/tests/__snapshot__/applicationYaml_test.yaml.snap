@@ -8,6 +8,8 @@ injects application properties spring-container:
             value: RELEASE-NAME
           - name: SPRING_CONFIG_ADDITIONAL_LOCATION
             value: optional:/app/config/*/
+          - name: SERVER_PORT
+            value: "8080"
         image: goatfryed/spring-boot-echo:latest
         imagePullPolicy: IfNotPresent
         name: spring-boot
@@ -68,6 +70,8 @@ mounts configuration values:
             value: RELEASE-NAME
           - name: SPRING_CONFIG_ADDITIONAL_LOCATION
             value: optional:/app/config/*/
+          - name: SERVER_PORT
+            value: "8080"
         image: goatfryed/spring-boot-echo:latest
         imagePullPolicy: IfNotPresent
         name: spring-boot
@@ -100,6 +104,8 @@ mounts referenced configMaps:
             value: RELEASE-NAME
           - name: SPRING_CONFIG_ADDITIONAL_LOCATION
             value: optional:/app/config/*/
+          - name: SERVER_PORT
+            value: "8080"
         image: goatfryed/spring-boot-echo:latest
         imagePullPolicy: IfNotPresent
         name: spring-boot
@@ -139,6 +145,8 @@ mounts referenced secrets:
             value: RELEASE-NAME
           - name: SPRING_CONFIG_ADDITIONAL_LOCATION
             value: optional:/app/config/*/
+          - name: SERVER_PORT
+            value: "8080"
         image: goatfryed/spring-boot-echo:latest
         imagePullPolicy: IfNotPresent
         name: spring-boot

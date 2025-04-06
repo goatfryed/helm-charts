@@ -74,6 +74,8 @@ works with maximal configuration:
                   value: myAwesomeApplication
                 - name: SPRING_CONFIG_ADDITIONAL_LOCATION
                   value: optional:/app/config/*/
+                - name: SERVER_PORT
+                  value: "8083"
               image: user-registry/user-repo:user-tag
               imagePullPolicy: Always
               livenessProbe:
@@ -323,6 +325,8 @@ works with minimal configuration:
                   value: RELEASE-NAME
                 - name: SPRING_CONFIG_ADDITIONAL_LOCATION
                   value: optional:/app/config/*/
+                - name: SERVER_PORT
+                  value: "8080"
               image: goatfryed/spring-boot-echo:latest
               imagePullPolicy: IfNotPresent
               livenessProbe:

@@ -29,11 +29,16 @@ release/roll-me: {{ print .Release.Revision "-" (randAlphaNum 5) | quote }}
 
 {{- define "better-spring-boot.deployment.containerEnv" }}
   {{- $envVars := .Values.spring.environmentVariable }}
-  {{- $envVars = omit $envVars "SPRING_PROFILES_ACTIVE" "SPRING_CONFIG_ADDITIONAL_LOCATION" "SPRING_APPLICATION_NAME" }}
+  {{- $envVars = omit $envVars
+        "SPRING_PROFILES_ACTIVE"
+        "SPRING_CONFIG_ADDITIONAL_LOCATION"
+        "SPRING_APPLICATION_NAME"
+        "SERVER_PORT"
+  }}
   {{- range $key, $value := $envVars }}
   {{- if ne $value nil }}
 - name: {{ $key }}
-  value: {{ default "''" $value }}
+  value: {{ default "" $value | toString | toJson }}
   {{- end }}
   {{- end }}
   {{- $activeProfiles := include "better-spring-boot.deploymentactiveProfiles" . }}
@@ -47,6 +52,8 @@ release/roll-me: {{ print .Release.Revision "-" (randAlphaNum 5) | quote }}
 {{- end }}
 - name: SPRING_CONFIG_ADDITIONAL_LOCATION
   value: optional:/app/config/*/
+- name: SERVER_PORT
+  value: {{ .Values.spring.serverPort | default .Values.service.port | toString | toJson }}
 {{- end }}
 
 
