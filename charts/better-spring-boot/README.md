@@ -9,7 +9,7 @@ Also because other available helm charts for spring services are poorly document
 - [Getting started](#getting-started)
 - [Features](#features)
     - [Easy profile configuration management](#easy-profile-configuration-management)
-    - [Deployment debug mode](#)
+    - [Deployment debug mode](#debug-convenience-to-get-started)
 
 ## Promises
 **One chart to rule them all:**\
@@ -61,6 +61,17 @@ Also check out the [unit tests](./tests) for usage examples.
 
 We are terrible sorry to not provide a better documentation at the moment!
 
+## Managed spring configuration
+The following spring configuration is manged by the helm chart.
+
+| Spring boot                      | Chart                                                        |
+|----------------------------------|--------------------------------------------------------------|
+| server.port                      | spring.serverPort                                            |
+| spring.application.name          | spring.applicationName                                       |
+| spring.profiles.active           | [profile management](#easy-profile-configuration-management) |
+| spring.config.additionalLocation | *internal*                                                   |
+
+
 ## Easy profile configuration management
 You can configure profile specific application properties under `spring.config.{myProfileName}` from different sources.
 By default, all configured profiles are activated ordered by name.
@@ -76,8 +87,8 @@ values.yaml
 spring:
   config:
     myProfile:
-      server:
-        port: 80
+      app:
+        foo: bar
       logging:
         level:
           root: WARN

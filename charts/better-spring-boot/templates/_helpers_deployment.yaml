@@ -33,6 +33,7 @@ release/roll-me: {{ print .Release.Revision "-" (randAlphaNum 5) | quote }}
         "SPRING_PROFILES_ACTIVE"
         "SPRING_CONFIG_ADDITIONAL_LOCATION"
         "SPRING_APPLICATION_NAME"
+        "SERVER_PORT"
   }}
   {{- range $key, $value := $envVars }}
   {{- if ne $value nil }}
@@ -51,6 +52,8 @@ release/roll-me: {{ print .Release.Revision "-" (randAlphaNum 5) | quote }}
 {{- end }}
 - name: SPRING_CONFIG_ADDITIONAL_LOCATION
   value: optional:/app/config/*/
+- name: SERVER_PORT
+  value: {{ .Values.spring.serverPort | default .Values.service.port | toString | toJson }}
 {{- end }}
 
 

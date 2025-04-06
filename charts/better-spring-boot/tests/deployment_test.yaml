@@ -244,6 +244,37 @@ tests:
         notEqual:
           path: spec.template.spec.containers[0].env[*].name
           value: SPRING_APPLICATION_NAME
+---
+suite: deployment/ports
+templates:
+  - deployment.yaml
+values:
+  - "values/values.base.yaml"
+tests:
+  - it: manages server port
+    set:
+      spring.environmentVariable.SERVER_PORT: "123"
+    asserts:
+      - notContains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: SERVER_PORT
+            value: "123"
+  - it: sets server port
+    asserts:
+      - template: deployment.yaml
+        contains:
+          path: spec.template.spec.containers[0].ports
+          content:
+              containerPort: 8080
+              name: http
+              protocol: TCP
+      - template: deployment.yaml
+        contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: SERVER_PORT
+            value: "8080"
 
 
 
