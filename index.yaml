@@ -83,7 +83,7 @@ entries:
     created: "2025-04-06T14:43:48.615587393Z"
     description: Unified deployment of individual spring boot applications
     digest: dbd82716e3a2b45f42a805509d3fe4e99ba4c98b95365d1074392869b517d5d4
-    home: https://github.com/goatfryed/helm-charts/
+    home: https://github.com/goatfryed/helm-charts/tree/main/charts/easy-spring-boot
     keywords:
     - java
     - spring-boot
