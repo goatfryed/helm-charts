@@ -1,5 +1,8 @@
 <!-- omit in toc -->
 # Spring Boot Helm Chat
+
+⚠ MOVED TO [goatfryed/easy-spring-boot](https://github.com/goatfryed/helm-charts/) ⚠
+
 A simple, yet flexible helm chart to deploy spring boot applications in kubernetes.
 
 Because most helm charts for spring applications are just helm chart init,
