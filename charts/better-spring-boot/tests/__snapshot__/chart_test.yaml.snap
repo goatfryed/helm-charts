@@ -70,6 +70,8 @@ works with maximal configuration:
             - env:
                 - name: SPRING_PROFILES_ACTIVE
                   value: banana, funk, inspector
+                - name: SPRING_APPLICATION_NAME
+                  value: my-app-fullname
                 - name: SPRING_CONFIG_ADDITIONAL_LOCATION
                   value: optional:/app/config/*/
               image: user-registry/user-repo:user-tag
@@ -317,6 +319,8 @@ works with minimal configuration:
         spec:
           containers:
             - env:
+                - name: SPRING_APPLICATION_NAME
+                  value: RELEASE-NAME
                 - name: SPRING_CONFIG_ADDITIONAL_LOCATION
                   value: optional:/app/config/*/
               image: goatfryed/spring-boot-echo:latest

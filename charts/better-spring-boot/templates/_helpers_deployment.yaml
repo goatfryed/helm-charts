@@ -23,10 +23,13 @@ release/roll-me: {{ print .Release.Revision "-" (randAlphaNum 5) | quote }}
   {{- end }}
 {{- end }}
 
+{{- define "better-spring-boot.deployment.springApplicationName" }}
+{{- .Values.spring.applicationName | default .Values.fullnameOverride | default .Release.Name }}
+{{- end}}
 
 {{- define "better-spring-boot.deployment.containerEnv" }}
   {{- $envVars := .Values.spring.environmentVariable }}
-  {{- $envVars = omit $envVars "SPRING_PROFILES_ACTIVE" "SPRING_CONFIG_ADDITIONAL_LOCATION" }}
+  {{- $envVars = omit $envVars "SPRING_PROFILES_ACTIVE" "SPRING_CONFIG_ADDITIONAL_LOCATION" "SPRING_APPLICATION_NAME" }}
   {{- range $key, $value := $envVars }}
   {{- if ne $value nil }}
 - name: {{ $key }}
@@ -38,6 +41,8 @@ release/roll-me: {{ print .Release.Revision "-" (randAlphaNum 5) | quote }}
 - name: SPRING_PROFILES_ACTIVE
   value: {{ default "''" $activeProfiles }}
   {{- end }}
+- name: SPRING_APPLICATION_NAME
+  value: {{ include "better-spring-boot.deployment.springApplicationName" . }}
 - name: SPRING_CONFIG_ADDITIONAL_LOCATION
   value: optional:/app/config/*/
 {{- end }}

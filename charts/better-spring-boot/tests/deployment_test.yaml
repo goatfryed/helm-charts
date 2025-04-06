@@ -1,4 +1,4 @@
-suite: test deployment
+suite: deployment
 templates:
   - deployment.yaml
   - configMap.appConfig.yaml
@@ -10,9 +10,9 @@ tests:
       deployment.recreatePodStrategy: false
     asserts:
       - template: deployment.yaml
-        equal:
-          path: spec.template.spec.containers[0].env[0]
-          value:
+        contains:
+          path: spec.template.spec.containers[0].env
+          content:
             name: SPRING_PROFILES_ACTIVE
             value: "k8s, local, something"
   - it: supports profiles as arrays
@@ -22,9 +22,9 @@ tests:
       deployment.recreatePodStrategy: false
     asserts:
       - template: deployment.yaml
-        equal:
-          path: spec.template.spec.containers[0].env[0]
-          value:
+        contains:
+          path: spec.template.spec.containers[0].env
+          content:
             name: SPRING_PROFILES_ACTIVE
             value: "k8s, local, something"
   - it: calculates checksum over app config
@@ -82,7 +82,7 @@ tests:
         equal:
           path: spec.template.metadata.labels.release/checksum-app-config
           value: ee5143893af613611dd5c59559e249c5612e2f11
-  - it: supports environment variables
+  - it: supports user provided environment variables
     set:
       image.repository: goatfryed/spring-boot-echo
       spring.environmentVariable:
@@ -92,18 +92,27 @@ tests:
         SILENT: ~
     asserts:
       - template: deployment.yaml
-        equal:
+        contains:
           path: spec.template.spec.containers[0].env
-          value:
-            - name: CHUCK
-              value: NORRIS
-            - name: FOO
-              value: BAR
-            - name: MUTE
-              value: ""
-            - name: SPRING_CONFIG_ADDITIONAL_LOCATION
-              value: optional:/app/config/*/
-
+          content:
+            name: CHUCK
+            value: NORRIS
+      - template: deployment.yaml
+        contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: FOO
+            value: BAR
+      - template: deployment.yaml
+        contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: MUTE
+            value: ""
+      - template: deployment.yaml
+        notEqual:
+          path: spec.template.spec.containers[0].env[*].name
+          value: SILENT
   - it: omits managed environment variables
     set:
       image.repository: goatfryed/spring-boot-echo
@@ -112,12 +121,17 @@ tests:
         SPRING_CONFIG_ADDITIONAL_LOCATION: /other/path
     asserts:
       - template: deployment.yaml
-        equal:
-          path: spec.template.spec.containers[0].env[0].value
-          value: optional:/app/config/*/
+        contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: SPRING_CONFIG_ADDITIONAL_LOCATION
+            value: optional:/app/config/*/
       - template: deployment.yaml
-        notExists:
-          path: spec.template.spec.containers[0].env[1]
+        notContains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: SPRING_PROFILES_ACTIVE
+            value: test
   - it: adds random label on podRecreationStrategy always
     set:
       image.repository: goatfryed/spring-boot-echo
@@ -187,4 +201,33 @@ tests:
       - template: deployment.yaml
         exists:
           path: spec.template.spec.containers[0].readinessProbe
+---
+suite: deployment/application name
+templates:
+  - deployment.yaml
+  - configMap.appConfig.yaml
+tests:
+  - it: sets spring application name to release name by default
+    values:
+      - "values/values.base.yaml"
+    asserts:
+      - template: deployment.yaml
+        contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: SPRING_APPLICATION_NAME
+            value: RELEASE-NAME
+  - it: follows full name override
+    values:
+      - "values/values.base.yaml"
+    set:
+      fullnameOverride: myApplicationName
+    asserts:
+      - template: deployment.yaml
+        contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: SPRING_APPLICATION_NAME
+            value: myApplicationName
+
 
