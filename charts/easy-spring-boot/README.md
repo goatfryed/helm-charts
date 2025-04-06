@@ -48,7 +48,7 @@ server:
 Install your app:
 ```shell
 helm install \
-  my-spring-app goatfryed/better-spring-boot \
+  my-spring-app goatfryed/easy-spring-boot \
   --set image.repository=myRegistry/myImageRepo \
   --set-file spring.config.local.values=application.yaml
 ```
@@ -133,7 +133,7 @@ and you want to exec into a container to run it manually, check the mounted conf
 
 Of course, you could simply have a values.debug.yaml that you apply additionally, for these cases.
 The main reason for this feature is convenience and the option to quickly toggle debug mode via
-`helm upgrade my-release goatfryed/better-spring-boot --reuse-values --set debugDeployment.enabled=true|false`
+`helm upgrade my-release goatfryed/easy-spring-boot --reuse-values --set debugDeployment.enabled=true|false`
 
 ### start pod without a running application
 By default, if debugDeployment is enabled, the pod will start with inactive health checks and simply wait for shutdown.

@@ -10,4 +10,4 @@ jobs:
   verify:
     uses: ./.github/workflows/test.yml
     with:
-      chart-dir: charts/better-spring-boot
+      chart-dir: charts/easy-spring-boot

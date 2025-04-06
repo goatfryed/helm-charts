@@ -1,7 +1,7 @@
-{{- define "better-spring-boot.deployment.podRecreationStrategy" -}}
+{{- define "easy-spring-boot.deployment.podRecreationStrategy" -}}
 {{- $strategy := default "never" .Values.deployment.recreatePodStrategy }}
 {{- if eq $strategy "values-changed" }}
-{{- with ( include "better-spring-boot.deployment.helmAppConfigChecksum" . ) }}
+{{- with ( include "easy-spring-boot.deployment.helmAppConfigChecksum" . ) }}
 release/checksum-app-config: {{ . }}
 {{- end }}
 {{- else if eq $strategy "always" }}
@@ -9,25 +9,25 @@ release/roll-me: {{ print .Release.Revision "-" (randAlphaNum 5) | quote }}
 {{- end }}
 {{- end }}
 
-{{- define "better-spring-boot.deployment.helmAppConfigChecksum" }}
-  {{- $activeProfiles := include "better-spring-boot.deploymentactiveProfiles" . }}
+{{- define "easy-spring-boot.deployment.helmAppConfigChecksum" }}
+  {{- $activeProfiles := include "easy-spring-boot.deploymentactiveProfiles" . }}
   {{- $activeProfilesList :=  (regexSplit ", ?" $activeProfiles -1) }}
   {{- $appConfig := include (print $.Template.BasePath "/configMap.appConfig.yaml") . | fromYaml }}
   {{- if $appConfig.data }}
     {{- $activeConfig := dict }}
     {{- range $activeProfile := (sortAlpha $activeProfilesList) -}}
-      {{- $configFileName := include "better-spring-boot.appConfigMap.configFileName" $activeProfile }}
+      {{- $configFileName := include "easy-spring-boot.appConfigMap.configFileName" $activeProfile }}
       {{- $activeConfig := merge $activeConfig (pick $appConfig.data $configFileName) }}
     {{- end }}
     {{- $activeConfig | toYaml | sha1sum }}
   {{- end }}
 {{- end }}
 
-{{- define "better-spring-boot.deployment.springApplicationName" }}
+{{- define "easy-spring-boot.deployment.springApplicationName" }}
 {{- .Values.spring.applicationName | default .Values.fullnameOverride | default .Release.Name }}
 {{- end}}
 
-{{- define "better-spring-boot.deployment.containerEnv" }}
+{{- define "easy-spring-boot.deployment.containerEnv" }}
   {{- $envVars := .Values.spring.environmentVariable }}
   {{- $envVars = omit $envVars
         "MANAGEMENT_SERVER_PORT"
@@ -42,32 +42,32 @@ release/roll-me: {{ print .Release.Revision "-" (randAlphaNum 5) | quote }}
   value: {{ default "" $value | toString | toJson }}
   {{- end }}
   {{- end }}
-  {{- $activeProfiles := include "better-spring-boot.deploymentactiveProfiles" . }}
+  {{- $activeProfiles := include "easy-spring-boot.deploymentactiveProfiles" . }}
   {{- with $activeProfiles }}
 - name: SPRING_PROFILES_ACTIVE
   value: {{ default "''" $activeProfiles }}
   {{- end }}
 {{- if not (and (kindIs "bool" .Values.spring.applicationName) (eq .Values.spring.applicationName false)) }}
 - name: SPRING_APPLICATION_NAME
-  value: {{ include "better-spring-boot.deployment.springApplicationName" . }}
+  value: {{ include "easy-spring-boot.deployment.springApplicationName" . }}
 {{- end }}
 - name: SPRING_CONFIG_ADDITIONAL_LOCATION
   value: optional:/app/config/*/
 - name: SERVER_PORT
-  value: {{ include "better-spring-boot.deployment.applicationServerPort" . | toString | toJson }}
+  value: {{ include "easy-spring-boot.deployment.applicationServerPort" . | toString | toJson }}
 - name: MANAGEMENT_SERVER_PORT
-  value: {{ include "better-spring-boot.deployment.managementServerPort" . | toString | toJson }}
+  value: {{ include "easy-spring-boot.deployment.managementServerPort" . | toString | toJson }}
 {{- end }}
 
-{{- define "better-spring-boot.deployment.applicationServerPort" }}
+{{- define "easy-spring-boot.deployment.applicationServerPort" }}
 {{- .Values.spring.serverPort | default .Values.service.port }}
 {{- end }}
 
-{{- define "better-spring-boot.deployment.managementServerPort" }}
-{{- .Values.spring.managementPort | default (include "better-spring-boot.deployment.applicationServerPort" .) }}
+{{- define "easy-spring-boot.deployment.managementServerPort" }}
+{{- .Values.spring.managementPort | default (include "easy-spring-boot.deployment.applicationServerPort" .) }}
 {{- end }}
 
-{{- define "better-spring-boot.deployment.appHealthChecks" }}
+{{- define "easy-spring-boot.deployment.appHealthChecks" }}
 {{- if and .Values.debugDeployment.enabled (not .Values.debugDeployment.healthChecksEnabled) }}
 {{- else }}
 {{- $livenessProbe := mergeOverwrite (deepCopy .Values.healthChecks.defaults) .Values.healthChecks.livenessProbe }}

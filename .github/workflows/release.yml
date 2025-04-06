@@ -10,7 +10,7 @@ jobs:
   test-before-release:
     uses: ./.github/workflows/test.yml
     with:
-      chart-dir: charts/better-spring-boot
+      chart-dir: charts/easy-spring-boot
 
   release:
     needs: test-before-release
