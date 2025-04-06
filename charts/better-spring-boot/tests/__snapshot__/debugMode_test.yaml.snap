@@ -6,6 +6,8 @@ adds health checks only if explicitly activated:
           - -c
           - trap "exit 0" SIGTERM SIGINT; tail -f /dev/null & wait
         env:
+          - name: SPRING_APPLICATION_NAME
+            value: RELEASE-NAME
           - name: SPRING_CONFIG_ADDITIONAL_LOCATION
             value: optional:/app/config/*/
         image: goatfryed/spring-boot-echo:latest
@@ -36,6 +38,8 @@ overrides profiles:
       - env:
           - name: SPRING_PROFILES_ACTIVE
             value: debug, profile2
+          - name: SPRING_APPLICATION_NAME
+            value: RELEASE-NAME
           - name: SPRING_CONFIG_ADDITIONAL_LOCATION
             value: optional:/app/config/*/
         image: goatfryed/spring-boot-echo:latest
@@ -68,6 +72,8 @@ overrides run command:
           - -c
           - trap "exit 0" SIGTERM SIGINT; tail -f /dev/null & wait
         env:
+          - name: SPRING_APPLICATION_NAME
+            value: RELEASE-NAME
           - name: SPRING_CONFIG_ADDITIONAL_LOCATION
             value: optional:/app/config/*/
         image: goatfryed/spring-boot-echo:latest

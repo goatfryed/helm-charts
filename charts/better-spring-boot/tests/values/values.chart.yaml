@@ -10,6 +10,7 @@ image:
   tag: "user-tag"
 
 spring:
+  applicationName: myAwesomeApplication
   serverPort: 8083
   managementPort: 8090
   profiles:

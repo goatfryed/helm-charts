@@ -4,6 +4,8 @@ injects application properties spring-container:
       - env:
           - name: SPRING_PROFILES_ACTIVE
             value: profile1, profile2, profile3, profile4
+          - name: SPRING_APPLICATION_NAME
+            value: RELEASE-NAME
           - name: SPRING_CONFIG_ADDITIONAL_LOCATION
             value: optional:/app/config/*/
         image: goatfryed/spring-boot-echo:latest
@@ -62,6 +64,8 @@ mounts configuration values:
       - env:
           - name: SPRING_PROFILES_ACTIVE
             value: userConfig
+          - name: SPRING_APPLICATION_NAME
+            value: RELEASE-NAME
           - name: SPRING_CONFIG_ADDITIONAL_LOCATION
             value: optional:/app/config/*/
         image: goatfryed/spring-boot-echo:latest
@@ -92,6 +96,8 @@ mounts referenced configMaps:
       - env:
           - name: SPRING_PROFILES_ACTIVE
             value: userConfig
+          - name: SPRING_APPLICATION_NAME
+            value: RELEASE-NAME
           - name: SPRING_CONFIG_ADDITIONAL_LOCATION
             value: optional:/app/config/*/
         image: goatfryed/spring-boot-echo:latest
@@ -129,6 +135,8 @@ mounts referenced secrets:
       - env:
           - name: SPRING_PROFILES_ACTIVE
             value: userConfig
+          - name: SPRING_APPLICATION_NAME
+            value: RELEASE-NAME
           - name: SPRING_CONFIG_ADDITIONAL_LOCATION
             value: optional:/app/config/*/
         image: goatfryed/spring-boot-echo:latest
