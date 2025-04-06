@@ -77,4 +77,24 @@ entries:
     urls:
     - https://github.com/goatfryed/helm-charts/releases/download/better-spring-boot-0.2.0/better-spring-boot-0.2.0.tgz
     version: 0.2.0
-generated: "2025-04-06T12:56:32.837216001Z"
+  easy-spring-boot:
+  - apiVersion: v2
+    appVersion: 3.4.1
+    created: "2025-04-06T13:04:02.367248559Z"
+    description: Unified deployment of individual spring boot applications
+    digest: 2aec4815b1c8bf0aa1f0f88a986dff19ad2b00eaaa1be0cf3b4b0a82cecc44fc
+    home: https://github.com/goatfryed/helm-charts/
+    keywords:
+    - java
+    - spring-boot
+    maintainers:
+    - email: goatfryed@gmail.com
+      name: Omar Sood
+    name: easy-spring-boot
+    sources:
+    - https://github.com/goatfryed/helm-charts/
+    type: application
+    urls:
+    - https://github.com/goatfryed/helm-charts/releases/download/easy-spring-boot-0.5.0/easy-spring-boot-0.5.0.tgz
+    version: 0.5.0
+generated: "2025-04-06T13:04:02.36726482Z"
