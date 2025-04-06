@@ -1,22 +1,13 @@
 <!-- omit in toc -->
 # Easy Spring Boot
 
-A simple, yet flexible helm chart to deploy spring boot applications in kubernetes.
-
-Because most helm charts for spring applications are just helm chart init,
-but it can be simpler, yet more convenient.
+A simple, yet flexible helm chart to deploy spring boot applications in kubernetes.\
+Configure all you needs as simple as possible.
 
 - [Getting started](#getting-started)
 - [Features](#features)
     - [Easy profile configuration management](#easy-profile-configuration-management)
     - [Deployment debug mode](#debug-convenience-to-get-started)
-
-## Promises
-**One chart to rule them all:**\
-Set your image repository, set your application configuration, install, enjoy.
-**Simple:** Your chart is basically helm create. So are we.\
-**Flexible:** All your concerns should be met. You think your microservice deployment has a need that's not satisfied? [Raise an issue](../../CONTRIBUTING.md).\
-**Tidy**: Not only do we free you from the burden of maintaining your spring boot helm charts, your configuration will be even cleaner. See our recommendations below.
 
 # Getting started
 ```shell
