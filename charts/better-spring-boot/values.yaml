@@ -11,9 +11,10 @@ image:
   tag: ""
 
 spring:
-  # one of string|nil
+  # one of string|nil|false
   # string -> sets spring application name to your provided name
-  # nil -> sets spring application name equal to release name
+  # nil -> sets spring application name equal to release name or fullnameOverride
+  # false -> opt out of name management. e.g. if you provide the name built into your image
   applicationName: ~
   # if you configure server.port in your spring application, set this to the same value
   serverPort: 8080

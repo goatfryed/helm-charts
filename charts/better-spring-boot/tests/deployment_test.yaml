@@ -241,5 +241,16 @@ tests:
           content:
             name: SPRING_APPLICATION_NAME
             value: myApplicationName
+  - it: backs off from name configuration
+    values:
+      - "values/values.base.yaml"
+    set:
+      spring.applicationName: false
+    asserts:
+      - template: deployment.yaml
+        notEqual:
+          path: spec.template.spec.containers[0].env[*].name
+          value: SPRING_APPLICATION_NAME
+
 
 

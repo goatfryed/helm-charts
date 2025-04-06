@@ -41,8 +41,10 @@ release/roll-me: {{ print .Release.Revision "-" (randAlphaNum 5) | quote }}
 - name: SPRING_PROFILES_ACTIVE
   value: {{ default "''" $activeProfiles }}
   {{- end }}
+{{- if not (and (kindIs "bool" .Values.spring.applicationName) (eq .Values.spring.applicationName false)) }}
 - name: SPRING_APPLICATION_NAME
   value: {{ include "better-spring-boot.deployment.springApplicationName" . }}
+{{- end }}
 - name: SPRING_CONFIG_ADDITIONAL_LOCATION
   value: optional:/app/config/*/
 {{- end }}
