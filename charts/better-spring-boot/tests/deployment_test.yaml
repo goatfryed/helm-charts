@@ -205,13 +205,12 @@ tests:
 suite: deployment/application name
 templates:
   - deployment.yaml
-  - configMap.appConfig.yaml
+values:
+  - "values/values.base.yaml"
 tests:
   - it: sets spring application name to user provided name
     set:
       spring.applicationName: myAwesomeApp
-    values:
-      - "values/values.base.yaml"
     asserts:
       - template: deployment.yaml
         contains:
@@ -220,8 +219,6 @@ tests:
             name: SPRING_APPLICATION_NAME
             value: myAwesomeApp
   - it: sets spring application name to release name by default
-    values:
-      - "values/values.base.yaml"
     asserts:
       - template: deployment.yaml
         contains:
@@ -230,8 +227,6 @@ tests:
             name: SPRING_APPLICATION_NAME
             value: RELEASE-NAME
   - it: follows full name override by default
-    values:
-      - "values/values.base.yaml"
     set:
       fullnameOverride: myApplicationName
     asserts:
@@ -242,8 +237,6 @@ tests:
             name: SPRING_APPLICATION_NAME
             value: myApplicationName
   - it: backs off from name configuration
-    values:
-      - "values/values.base.yaml"
     set:
       spring.applicationName: false
     asserts:
