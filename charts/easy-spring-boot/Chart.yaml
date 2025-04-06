@@ -10,6 +10,6 @@ keywords:
 maintainers:
   - name: Omar Sood
     email: goatfryed@gmail.com
-home: https://github.com/goatfryed/helm-charts/
+home: https://github.com/goatfryed/helm-charts/tree/main/charts/easy-spring-boot
 sources:
   - https://github.com/goatfryed/helm-charts/
