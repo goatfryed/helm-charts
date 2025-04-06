@@ -1,7 +1,7 @@
 {{/*
 Expand the name of the chart.
 */}}
-{{- define "better-spring-boot.name" -}}
+{{- define "easy-spring-boot.name" -}}
 {{- default "spring-boot" .Values.nameOverride | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
@@ -10,11 +10,11 @@ Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 If release name contains chart name it will be used as a full name.
 */}}
-{{- define "better-spring-boot.fullname" -}}
+{{- define "easy-spring-boot.fullname" -}}
 {{- if .Values.fullnameOverride }}
 {{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
 {{- else }}
-{{- $name := include "better-spring-boot.name" . }}
+{{- $name := include "easy-spring-boot.name" . }}
 {{- if contains $name .Release.Name }}
 {{- .Release.Name | trunc 63 | trimSuffix "-" }}
 {{- else }}
@@ -26,16 +26,16 @@ If release name contains chart name it will be used as a full name.
 {{/*
 Create chart name and version as used by the chart label.
 */}}
-{{- define "better-spring-boot.chart" -}}
+{{- define "easy-spring-boot.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
 {{/*
 Common labels
 */}}
-{{- define "better-spring-boot.labels" -}}
-helm.sh/chart: {{ include "better-spring-boot.chart" . }}
-{{ include "better-spring-boot.selectorLabels" . }}
+{{- define "easy-spring-boot.labels" -}}
+helm.sh/chart: {{ include "easy-spring-boot.chart" . }}
+{{ include "easy-spring-boot.selectorLabels" . }}
 {{- if .Values.appVersion }}
 app.kubernetes.io/version: {{ .Values.appVersion | quote }}
 {{- end }}
@@ -45,22 +45,22 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{/*
 Selector labels
 */}}
-{{- define "better-spring-boot.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "better-spring-boot.name" . }}
+{{- define "easy-spring-boot.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "easy-spring-boot.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
 {{/*
 Create the name of the service account to use
 */}}
-{{- define "better-spring-boot.serviceAccountName" -}}
+{{- define "easy-spring-boot.serviceAccountName" -}}
 {{- if .Values.serviceAccount.create }}
-{{- default (include "better-spring-boot.fullname" .) .Values.serviceAccount.name }}
+{{- default (include "easy-spring-boot.fullname" .) .Values.serviceAccount.name }}
 {{- else }}
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
 
-{{- define "better-spring-boot.propertiesConfigMapName" -}}
-{{ include "better-spring-boot.fullname" . }}-app-config
+{{- define "easy-spring-boot.propertiesConfigMapName" -}}
+{{ include "easy-spring-boot.fullname" . }}-app-config
 {{- end -}}

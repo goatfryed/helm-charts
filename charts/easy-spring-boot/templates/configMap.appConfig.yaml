@@ -1,12 +1,12 @@
-{{ if (include "better-spring-boot.appConfigMap.helmValueProfiles" .) }}
+{{ if (include "easy-spring-boot.appConfigMap.helmValueProfiles" .) }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ include "better-spring-boot.propertiesConfigMapName" . }}
+  name: {{ include "easy-spring-boot.propertiesConfigMapName" . }}
 data:
   {{- range $profile,$config := .Values.spring.config }}
   {{- if $config.values }}
-  {{ include "better-spring-boot.appConfigMap.configFileName" $profile | nindent 2 }}: |
+  {{ include "easy-spring-boot.appConfigMap.configFileName" $profile | nindent 2 }}: |
     {{- if kindIs "map" $config.values }}
     {{- toYaml $config.values | nindent 4 }}
     {{- else if kindIs "string" $config.values }}

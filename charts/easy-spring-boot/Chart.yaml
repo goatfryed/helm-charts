@@ -1,8 +1,8 @@
 apiVersion: v2
-name: better-spring-boot
+name: easy-spring-boot
 description: Unified deployment of individual spring boot applications
 type: application
-version: 0.4.1
+version: 0.5.0
 appVersion: "3.4.1"
 keywords:
   - java

@@ -1,16 +1,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "better-spring-boot.fullname" . }}
+  name: {{ include "easy-spring-boot.fullname" . }}
   labels:
-    {{- include "better-spring-boot.labels" . | nindent 4 }}
+    {{- include "easy-spring-boot.labels" . | nindent 4 }}
 spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
   {{- end }}
   selector:
     matchLabels:
-      {{- include "better-spring-boot.selectorLabels" . | nindent 6 }}
+      {{- include "easy-spring-boot.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       {{- with .Values.podAnnotations }}
@@ -18,8 +18,8 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{- include "better-spring-boot.labels" . | nindent 8 }}
-        {{- include "better-spring-boot.deployment.podRecreationStrategy" . | nindent 8 }}
+        {{- include "easy-spring-boot.labels" . | nindent 8 }}
+        {{- include "easy-spring-boot.deployment.podRecreationStrategy" . | nindent 8 }}
         {{- with .Values.podLabels }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
@@ -28,7 +28,7 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "better-spring-boot.serviceAccountName" . }}
+      serviceAccountName: {{ include "easy-spring-boot.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
@@ -41,25 +41,25 @@ spec:
           command:
             {{- toYaml .Values.debugDeployment.overrideCommand | nindent 12 }}
           {{- end }}
-          {{- with (include "better-spring-boot.deployment.containerEnv" .) }}
+          {{- with (include "easy-spring-boot.deployment.containerEnv" .) }}
           env:
             {{- . | nindent 12 }}
           {{- end }}
           ports:
             - name: http
-              containerPort: {{ include "better-spring-boot.deployment.applicationServerPort" . }}
+              containerPort: {{ include "easy-spring-boot.deployment.applicationServerPort" . }}
               protocol: TCP
             - name: http-management
-              containerPort: {{ include "better-spring-boot.deployment.managementServerPort" . }}
+              containerPort: {{ include "easy-spring-boot.deployment.managementServerPort" . }}
               protocol: TCP
-          {{- include "better-spring-boot.deployment.appHealthChecks" . | nindent 10 }}
+          {{- include "easy-spring-boot.deployment.appHealthChecks" . | nindent 10 }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
             - name: helm-application-properties
               mountPath: /app/config/helm-config
               readOnly: true
-            {{- include "better-spring-boot.userConfigMounts" . | nindent 12 }}
+            {{- include "easy-spring-boot.userConfigMounts" . | nindent 12 }}
           {{- with .Values.volumeMounts }}
             {{- toYaml . | nindent 12 }}
           {{- end }}
@@ -73,8 +73,8 @@ spec:
       volumes:
         - name: helm-application-properties
           configMap:
-            name: {{ include "better-spring-boot.propertiesConfigMapName" . }}
-        {{- include "better-spring-boot.userConfigVolumes" . | nindent 8 }}
+            name: {{ include "easy-spring-boot.propertiesConfigMapName" . }}
+        {{- include "easy-spring-boot.userConfigVolumes" . | nindent 8 }}
       {{- with .Values.volumes }}
         {{- toYaml . | nindent 8 }}
       {{- end }}
@@ -91,15 +91,15 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
 
-{{- define "better-spring-boot.deploymentactiveProfiles" -}}
+{{- define "easy-spring-boot.deploymentactiveProfiles" -}}
 {{
-  (include "better-spring-boot.deploymentdebugProfiles" .)
-  | default (include "better-spring-boot.deploymentuserProfiles" .)
-  | default (include "better-spring-boot.deploymentdefaultProfiles" .)
+  (include "easy-spring-boot.deploymentdebugProfiles" .)
+  | default (include "easy-spring-boot.deploymentuserProfiles" .)
+  | default (include "easy-spring-boot.deploymentdefaultProfiles" .)
 }}
 {{- end -}}
 
-{{- define "better-spring-boot.deploymentuserProfiles" -}}
+{{- define "easy-spring-boot.deploymentuserProfiles" -}}
 {{ $activeProfiles := .Values.spring.profiles.active }}
 {{- if not $activeProfiles }}
 {{- "" -}}
@@ -112,7 +112,7 @@ spec:
 {{- end -}}
 {{- end -}}
 
-{{- define "better-spring-boot.deploymentdefaultProfiles" -}}
+{{- define "easy-spring-boot.deploymentdefaultProfiles" -}}
 {{- $profiles := list -}}
 {{- range $key,$value := .Values.spring.config -}}
 {{- $profiles = append $profiles $key -}}
@@ -120,7 +120,7 @@ spec:
 {{- join ", " $profiles -}}
 {{- end -}}
 
-{{- define "better-spring-boot.deploymentdebugProfiles" -}}
+{{- define "easy-spring-boot.deploymentdebugProfiles" -}}
 {{ $activeProfiles := .Values.debugDeployment.overrideProfiles }}
 {{- if not .Values.debugDeployment.enabled -}}
 {{- "" -}}
@@ -135,35 +135,35 @@ spec:
 {{- end -}}
 {{- end -}}
 
-{{- define "better-spring-boot.userConfigVolumeName" -}}
+{{- define "easy-spring-boot.userConfigVolumeName" -}}
 user-application-properties-{{- . -}}
 {{- end -}}
 
-{{- define "better-spring-boot.userConfigVolumes" -}}
+{{- define "easy-spring-boot.userConfigVolumes" -}}
 {{- range $profile,$config := .Values.spring.config -}}
 {{- if $config.configMap -}}
-- name: {{ include "better-spring-boot.userConfigVolumeName" $profile }}
+- name: {{ include "easy-spring-boot.userConfigVolumeName" $profile }}
   configMap:
     name: {{ required (printf "spring.config.%s.configMap.name must be given" $profile) $config.configMap.name }}
 {{ else if $config.secret -}}
-- name: {{ include "better-spring-boot.userConfigVolumeName" $profile }}
+- name: {{ include "easy-spring-boot.userConfigVolumeName" $profile }}
   secret:
     secretName: {{ required (printf "spring.config.%s.configMap.name must be given" $profile) $config.secret.name }}
 {{ end -}}
 {{- end -}}
 {{- end -}}
 
-{{- define "better-spring-boot.userConfigMounts" -}}
+{{- define "easy-spring-boot.userConfigMounts" -}}
 {{- range $profile,$config := .Values.spring.config -}}
 {{- if and $config.configMap $config.secret -}}
   {{ fail (printf "use either configMap or secret in spring.config.%s" $profile) }}
 {{- else if $config.configMap -}}
-- name: {{ include "better-spring-boot.userConfigVolumeName" $profile }}
+- name: {{ include "easy-spring-boot.userConfigVolumeName" $profile }}
   mountPath: /app/config/config-map/application-{{ $profile }}.{{ default "yaml" $config.configMap.type }}
   subPath: {{ default "application.yaml" $config.configMap.key }}
   readOnly: true
 {{ else if $config.secret -}}
-- name: {{ include "better-spring-boot.userConfigVolumeName" $profile }}
+- name: {{ include "easy-spring-boot.userConfigVolumeName" $profile }}
   mountPath: /app/config/config-map/application-{{ $profile }}.{{ default "yaml" $config.secret.type }}
   subPath: {{ default "application.yaml" $config.secret.key }}
   readOnly: true

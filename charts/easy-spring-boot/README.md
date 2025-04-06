@@ -1,13 +1,10 @@
 <!-- omit in toc -->
-# Spring Boot Helm Chat
-
-⚠ MOVED TO [goatfryed/easy-spring-boot](https://github.com/goatfryed/helm-charts/) ⚠
+# Easy Spring Boot
 
 A simple, yet flexible helm chart to deploy spring boot applications in kubernetes.
 
 Because most helm charts for spring applications are just helm chart init,
-but it can be simpler, yet more convenient.\
-Also because other available helm charts for spring services are poorly document, not convenient or just helm init.
+but it can be simpler, yet more convenient.
 
 - [Getting started](#getting-started)
 - [Features](#features)
@@ -51,7 +48,7 @@ server:
 Install your app:
 ```shell
 helm install \
-  my-spring-app goatfryed/better-spring-boot \
+  my-spring-app goatfryed/easy-spring-boot \
   --set image.repository=myRegistry/myImageRepo \
   --set-file spring.config.local.values=application.yaml
 ```
@@ -61,8 +58,6 @@ All configuration options are documented in [this chart's values.yaml](values.ya
 highlights selected features by example and explains the purpose. For detailed configuration option, see the values.yaml.
 
 Also check out the [unit tests](./tests) for usage examples.
-
-We are terrible sorry to not provide a better documentation at the moment!
 
 ## Managed spring configuration
 The following spring configuration is manged by the helm chart.
@@ -136,7 +131,7 @@ and you want to exec into a container to run it manually, check the mounted conf
 
 Of course, you could simply have a values.debug.yaml that you apply additionally, for these cases.
 The main reason for this feature is convenience and the option to quickly toggle debug mode via
-`helm upgrade my-release goatfryed/better-spring-boot --reuse-values --set debugDeployment.enabled=true|false`
+`helm upgrade my-release goatfryed/easy-spring-boot --reuse-values --set debugDeployment.enabled=true|false`
 
 ### start pod without a running application
 By default, if debugDeployment is enabled, the pod will start with inactive health checks and simply wait for shutdown.
