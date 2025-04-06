@@ -86,7 +86,7 @@ tests:
     set:
       image.repository: goatfryed/spring-boot-echo
       spring.environmentVariable:
-        FOO: BAR
+        FOO: 8080
         CHUCK: NORRIS
         MUTE: ""
         SILENT: ~
@@ -102,7 +102,7 @@ tests:
           path: spec.template.spec.containers[0].env
           content:
             name: FOO
-            value: BAR
+            value: "8080"
       - template: deployment.yaml
         contains:
           path: spec.template.spec.containers[0].env
