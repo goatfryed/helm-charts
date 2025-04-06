@@ -4,7 +4,7 @@ entries:
   - apiVersion: v2
     appVersion: 3.4.1
     created: "2025-04-06T12:56:32.837195273Z"
-    description: Unified deployment of individual spring boot applications
+    description: Moved to goatfryed/easy-spring-boot. Nothing to see here.
     digest: 5b20709179f7c3a3334d6f5f12531887174b1308d19c94eb165a4bb1cf2727ed
     home: https://github.com/goatfryed/helm-charts/
     keywords:
