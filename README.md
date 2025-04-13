@@ -10,7 +10,7 @@ The cool documentation can be found in the charts them self. See links below.
 
 A simple, yet flexible helm chart to deploy spring boot applications in kubernetes.
 - [Artifact Hub](https://artifacthub.io/packages/helm/goatfryed/easy-spring-boot)
-- [Chart documentation](charts/better-spring-boot/README.md)
+- [Chart documentation](charts/easy-spring-boot/README.md)
 
 
 # Contributing
